@@ -1,12 +1,42 @@
+
+'use client';
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Users, CreditCard, Activity } from "lucide-react";
+import { Users, CreditCard, Activity, Loader2 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { user, isLoading: authIsLoading } = useAuth();
+  const router = useRouter();
+  const [isVerifying, setIsVerifying] = useState(true);
+
+  useEffect(() => {
+    if (!authIsLoading) {
+      if (!user || user.role !== 'admin') {
+        router.replace('/'); // Redirige a la página principal si no es admin
+      } else {
+        setIsVerifying(false); // El usuario es admin, permitir acceso
+      }
+    }
+  }, [user, authIsLoading, router]);
+
+  if (authIsLoading || isVerifying) {
+    return (
+      <div className="flex flex-col justify-center items-center min-h-[calc(100vh-200px)]">
+        <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+        <p className="text-lg text-muted-foreground">Verificando acceso al panel de administración...</p>
+      </div>
+    );
+  }
+
+  // Si el usuario es admin y la verificación ha terminado, mostrar el layout.
   return (
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">

@@ -38,6 +38,7 @@ export interface NavItemConfig {
   href: string;
   label: string;
   icon: LucideIcon;
+  adminOnly?: boolean; // Para controlar visibilidad en el menú
 }
 
 // Tipos para el Panel de Administración
@@ -59,4 +60,9 @@ export interface AdminMember {
   subscriptionPlanId: string | null; // Puede no tener plan
   profilePictureUrl?: string;
   profilePictureHint?: string;
+}
+
+// Tipo para el usuario autenticado
+export interface User {
+  role: 'admin' | 'member';
 }
