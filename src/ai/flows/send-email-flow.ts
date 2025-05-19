@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview Handles sending emails.
@@ -9,14 +10,14 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const SendEmailInputSchema = z.object({
+const SendEmailInputSchema = z.object({
   to: z.string().email().describe('The recipient email address.'),
   subject: z.string().describe('The subject of the email.'),
   body: z.string().describe('The HTML body of the email.'),
 });
 export type SendEmailInput = z.infer<typeof SendEmailInputSchema>;
 
-export const SendEmailOutputSchema = z.object({
+const SendEmailOutputSchema = z.object({
   success: z.boolean().describe('Whether the email was sent successfully.'),
   message: z.string().describe('A message indicating the result of the send operation.'),
 });
@@ -57,3 +58,4 @@ Body preview: ${body.substring(0, 200)}...`);
     };
   }
 );
+
