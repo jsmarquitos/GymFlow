@@ -13,17 +13,28 @@ import { useAuth } from "@/hooks/useAuth"; // Importar useAuth
 
 const allNavItems: NavItemConfig[] = [
   { href: "/schedule", label: "Horario", icon: CalendarDays },
-  { href: "/bookings", label: "Mis Reservas", icon: Dumbbell },
-  { href: "/workout-ai", label: "IA de Entrenamiento", icon: Brain },
-  { href: "/profile", label: "Perfil", icon: Users },
-  { href: "/admin/members", label: "Administración", icon: Shield, adminOnly: true },
+  { href: "/bookings", label: "Mis Reservas", icon: Dumbbell, requiresAuth: true },
+  { href: "/workout-ai", label: "IA de Entrenamiento", icon: Brain, requiresAuth: true },
+  { href: "/profile", label: "Perfil", icon: Users, requiresAuth: true },
+  { href: "/admin/members", label: "Administración", icon: Shield, adminOnly: true, requiresAuth: true },
 ];
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, logout, isLoading } = useAuth();
 
-  const navItems = allNavItems.filter(item => !item.adminOnly || (user?.role === 'admin'));
+  const navItems = allNavItems.filter(item => {
+    // Si el item requiere autenticación y no hay usuario, no mostrarlo.
+    if (item.requiresAuth && !user) {
+      return false;
+    }
+    // Si el item es solo para admin y el usuario no es admin (o no hay usuario), no mostrarlo.
+    if (item.adminOnly && user?.role !== 'admin') {
+      return false;
+    }
+    // En cualquier otro caso, mostrar el item.
+    return true;
+  });
 
   return (
     <header className="bg-card shadow-md sticky top-0 z-50">

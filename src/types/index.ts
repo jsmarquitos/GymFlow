@@ -39,6 +39,7 @@ export interface NavItemConfig {
   label: string;
   icon: LucideIcon;
   adminOnly?: boolean; // Para controlar visibilidad en el menú
+  requiresAuth?: boolean; // Para mostrar solo si el usuario está autenticado
 }
 
 // Tipos para el Panel de Administración
