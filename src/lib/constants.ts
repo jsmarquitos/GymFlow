@@ -1,4 +1,4 @@
-import type { SubscriptionPlan, AdminMember, ClassSchedule, MemberBooking } from "@/types";
+import type { SubscriptionPlan, AdminMember, ClassSchedule, MemberBooking, PaymentRecord } from "@/types";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -172,3 +172,67 @@ export const MOCK_MEMBER_BOOKINGS: MemberBooking[] = [
   { id: "booking_4", classId: "4", className: "Fitness Acuático", classDate: "15 de julio de 2024", classTime: "10:00 AM", status: "Cancelada" },
   { id: "booking_5", classId: "5", className: "Entrenamiento de Fuerza 101", classDate: "18 de julio de 2024", classTime: "7:00 AM", status: "Asistida" },
 ];
+
+export const MOCK_PAYMENT_RECORDS: PaymentRecord[] = [
+  {
+    id: "pay_001",
+    memberId: "member_001",
+    memberName: "Carlos Santana",
+    paymentDate: "2024-07-01",
+    amount: 49.99,
+    paymentMethod: "Tarjeta de Crédito",
+    coveredPeriodStart: "2024-07-01",
+    coveredPeriodEnd: "2024-07-31",
+    status: "Pagado",
+    notes: "Pago mensual plan Premium."
+  },
+  {
+    id: "pay_002",
+    memberId: "member_002",
+    memberName: "Laura Vargas",
+    paymentDate: "2024-07-05",
+    amount: 29.99,
+    paymentMethod: "Efectivo",
+    coveredPeriodStart: "2024-07-05",
+    coveredPeriodEnd: "2024-08-04",
+    status: "Pagado",
+  },
+  {
+    id: "pay_003",
+    memberId: "member_001",
+    memberName: "Carlos Santana",
+    paymentDate: "2024-06-01",
+    amount: 49.99,
+    paymentMethod: "Tarjeta de Crédito",
+    coveredPeriodStart: "2024-06-01",
+    coveredPeriodEnd: "2024-06-30",
+    status: "Pagado",
+  },
+   {
+    id: "pay_004",
+    memberId: "member_004",
+    memberName: "Sofía Castro", // Miembro con estado Suspendido
+    paymentDate: "2024-05-15",
+    amount: 29.99,
+    paymentMethod: "Tarjeta de Débito",
+    coveredPeriodStart: "2024-05-15",
+    coveredPeriodEnd: "2024-06-14",
+    status: "Vencido",
+    notes: "Pago pendiente, contactar."
+  },
+   {
+    id: "pay_005",
+    memberId: "member_003", // Miembro con estado Inactivo
+    memberName: "Pedro Jiménez",
+    paymentDate: "2024-07-10",
+    amount: 15.00,
+    paymentMethod: "Otro",
+    coveredPeriodStart: "2024-07-10",
+    coveredPeriodEnd: "2024-07-17", // Pase diario o algo así
+    status: "Pagado",
+    notes: "Pase semanal."
+  },
+];
+
+export const PAYMENT_METHODS: PaymentMethod[] = ['Efectivo', 'Tarjeta de Crédito', 'Tarjeta de Débito', 'Transferencia Bancaria', 'Otro'];
+export const PAYMENT_STATUSES: PaymentStatus[] = ['Pagado', 'Pendiente', 'Vencido', 'Cancelado'];

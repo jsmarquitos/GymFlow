@@ -63,8 +63,26 @@ export interface AdminMember {
   profilePictureHint?: string;
 }
 
+export type PaymentStatus = 'Pagado' | 'Pendiente' | 'Vencido' | 'Cancelado';
+export type PaymentMethod = 'Efectivo' | 'Tarjeta de Crédito' | 'Tarjeta de Débito' | 'Transferencia Bancaria' | 'Otro';
+
+export interface PaymentRecord {
+  id: string;
+  memberId: string;
+  memberName: string; // Para facilitar la visualización en la tabla de pagos
+  paymentDate: string; // formato "yyyy-MM-dd"
+  amount: number;
+  paymentMethod: PaymentMethod;
+  coveredPeriodStart: string; // formato "yyyy-MM-dd"
+  coveredPeriodEnd: string; // formato "yyyy-MM-dd"
+  status: PaymentStatus;
+  notes?: string; // Notas adicionales sobre el pago
+}
+
+
 // Tipo para el usuario autenticado
 export interface User {
   role: 'admin' | 'member';
   email?: string; // Añadido para poder enviar correos
 }
+
