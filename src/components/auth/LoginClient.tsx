@@ -3,7 +3,7 @@
 
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
-import { UserShield, User as UserIcon } from 'lucide-react'; // UserShield for admin, User for member
+import { ShieldCheck, User as UserIcon } from 'lucide-react'; // ShieldCheck for admin, User for member
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -38,7 +38,7 @@ export function LoginClient() {
         className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
         size="lg"
       >
-        <UserShield className="mr-2 h-5 w-5" />
+        <ShieldCheck className="mr-2 h-5 w-5" />
         Ingresar como Administrador
       </Button>
       <Button 
