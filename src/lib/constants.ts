@@ -1,4 +1,4 @@
-import type { SubscriptionPlan, AdminMember, ClassSchedule } from "@/types";
+import type { SubscriptionPlan, AdminMember, ClassSchedule, MemberBooking } from "@/types";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -74,7 +74,9 @@ export const MOCK_ADMIN_MEMBERS: AdminMember[] = [
 
 export const formatDate = (dateString: string) => {
   try {
-    return format(new Date(dateString), "dd 'de' MMMM 'de' yyyy", { locale: es });
+    // Asegurarse de que la fecha se parsea correctamente, especialmente si solo es yyyy-MM-dd
+    const date = new Date(dateString + 'T00:00:00'); // Añadir hora para evitar problemas de zona horaria
+    return format(date, "dd 'de' MMMM 'de' yyyy", { locale: es });
   } catch (error) {
     console.warn(`Error formatting date: ${dateString}`, error);
     return "Fecha inválida";
@@ -160,4 +162,13 @@ export const MOCK_CLASS_SCHEDULES: ClassSchedule[] = [
     imageUrl: "https://placehold.co/600x400.png",
     imageHint: "baile zumba"
   },
+];
+
+
+export const MOCK_MEMBER_BOOKINGS: MemberBooking[] = [
+  { id: "booking_1", classId: "1", className: "Flujo de Yoga Matutino", classDate: "25 de julio de 2024", classTime: "7:00 AM", status: "Reservada" },
+  { id: "booking_2", classId: "2", className: "Explosión HIIT", classDate: "26 de julio de 2024", classTime: "6:00 PM", status: "Reservada" },
+  { id: "booking_3", classId: "3", className: "Hora de Poder en Spin", classDate: "20 de julio de 2024", classTime: "5:30 PM", status: "Asistida" },
+  { id: "booking_4", classId: "4", className: "Fitness Acuático", classDate: "15 de julio de 2024", classTime: "10:00 AM", status: "Cancelada" },
+  { id: "booking_5", classId: "5", className: "Entrenamiento de Fuerza 101", classDate: "18 de julio de 2024", classTime: "7:00 AM", status: "Asistida" },
 ];
