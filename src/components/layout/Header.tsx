@@ -1,9 +1,10 @@
+
 "use client";
 
 import Link from "next/link";
 import { NavItem } from "./NavItem";
 import type { NavItemConfig } from "@/types";
-import { CalendarDays, Dumbbell, Users, Brain, Menu, X } from "lucide-react";
+import { CalendarDays, Dumbbell, Users, Brain, Menu, X, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { useState } from "react";
@@ -14,6 +15,7 @@ const navItems: NavItemConfig[] = [
   { href: "/bookings", label: "Mis Reservas", icon: Dumbbell },
   { href: "/workout-ai", label: "IA de Entrenamiento", icon: Brain },
   { href: "/profile", label: "Perfil", icon: Users },
+  { href: "/admin/members", label: "Administración", icon: Shield },
 ];
 
 export function Header() {

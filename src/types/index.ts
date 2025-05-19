@@ -39,3 +39,24 @@ export interface NavItemConfig {
   label: string;
   icon: LucideIcon;
 }
+
+// Tipos para el Panel de Administración
+export interface SubscriptionPlan {
+  id: string;
+  name: string;
+  price: number;
+  duration: 'Mensual' | 'Trimestral' | 'Anual' | 'Otro';
+  features: string[];
+  description?: string;
+}
+
+export interface AdminMember {
+  id: string;
+  name: string;
+  email: string;
+  joinDate: string; // formato "yyyy-MM-dd" para facilitar la ordenación/manejo
+  status: 'Activo' | 'Inactivo' | 'Suspendido';
+  subscriptionPlanId: string | null; // Puede no tener plan
+  profilePictureUrl?: string;
+  profilePictureHint?: string;
+}
