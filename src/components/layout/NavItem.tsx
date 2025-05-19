@@ -1,4 +1,8 @@
+
 "use client";
+
+// This component might no longer be needed if SidebarMenuButton handles all cases.
+// Keeping it for now in case of specific use cases, but it's largely replaced.
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
