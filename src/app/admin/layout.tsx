@@ -3,10 +3,25 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Users, CreditCard, Activity, Loader2, Receipt, Settings } from "lucide-react"; // Added Settings
+import { Users, CreditCard, Activity, Loader2, Receipt, Settings } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation"; // Added usePathname
 import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils"; // Added cn
+
+interface AdminNavItemProps {
+  href: string;
+  label: string;
+  icon: React.ElementType;
+}
+
+const adminNavItems: AdminNavItemProps[] = [
+  { href: "/admin/members", label: "Miembros", icon: Users },
+  { href: "/admin/subscriptions", label: "Planes", icon: CreditCard },
+  { href: "/admin/classes", label: "Clases", icon: Activity },
+  { href: "/admin/payments", label: "Pagos", icon: Receipt },
+  { href: "/admin/settings", label: "Configuración", icon: Settings },
+];
 
 export default function AdminLayout({
   children,
@@ -15,14 +30,15 @@ export default function AdminLayout({
 }) {
   const { user, isLoading: authIsLoading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname(); // Get current pathname
   const [isVerifying, setIsVerifying] = useState(true);
 
   useEffect(() => {
     if (!authIsLoading) {
       if (!user || user.role !== 'admin') {
-        router.replace('/'); // Redirige a la página principal si no es admin
+        router.replace('/'); 
       } else {
-        setIsVerifying(false); // El usuario es admin, permitir acceso
+        setIsVerifying(false); 
       }
     }
   }, [user, authIsLoading, router]);
@@ -36,37 +52,32 @@ export default function AdminLayout({
     );
   }
 
-  // Si el usuario es admin y la verificación ha terminado, mostrar el layout.
   return (
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-3xl font-bold text-primary">Panel de Administración</h1>
         <nav className="flex flex-wrap gap-2">
-          <Button asChild variant="outline" size="sm">
-            <Link href="/admin/members">
-              <Users className="mr-2 h-4 w-4" /> Miembros
-            </Link>
-          </Button>
-          <Button asChild variant="outline" size="sm">
-            <Link href="/admin/subscriptions">
-              <CreditCard className="mr-2 h-4 w-4" /> Planes
-            </Link>
-          </Button>
-          <Button asChild variant="outline" size="sm">
-            <Link href="/admin/classes">
-              <Activity className="mr-2 h-4 w-4" /> Clases
-            </Link>
-          </Button>
-          <Button asChild variant="outline" size="sm">
-            <Link href="/admin/payments">
-              <Receipt className="mr-2 h-4 w-4" /> Pagos
-            </Link>
-          </Button>
-          <Button asChild variant="outline" size="sm">
-            <Link href="/admin/settings">
-              <Settings className="mr-2 h-4 w-4" /> Configuración
-            </Link>
-          </Button>
+          {adminNavItems.map((item) => {
+            const isActive = pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href));
+            return (
+              <Button
+                key={item.href}
+                asChild
+                variant="ghost" // Base variant is ghost
+                size="sm"
+                className={cn(
+                  "flex items-center space-x-2 rounded-md px-3 py-2 transition-colors",
+                  isActive 
+                    ? "bg-accent text-accent-foreground hover:bg-accent/90" // Active style using accent color
+                    : "text-foreground hover:bg-accent/10 hover:text-accent-foreground" // Subtle hover for non-active
+                )}
+              >
+                <Link href={item.href}>
+                  <item.icon className={cn("mr-2 h-4 w-4", isActive ? "text-accent-foreground" : "text-primary")} /> {item.label}
+                </Link>
+              </Button>
+            );
+          })}
         </nav>
       </div>
       <div className="border-t pt-6">
