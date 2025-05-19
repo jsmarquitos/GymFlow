@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useEffect } from 'react'; // Import useEffect
+import React, { useEffect } from 'react'; 
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -25,14 +25,25 @@ const settingsFormSchema = z.object({
 type SettingsFormValues = z.infer<typeof settingsFormSchema>;
 
 interface SettingsFormProps {
-  currentSettings: GymSettings; // Will come from context via SettingsClient
+  currentSettings: GymSettings; 
   onSubmit: (data: SettingsFormValues) => void;
 }
+
+// Initial default values for the form to ensure all inputs start as controlled.
+const initialFormValues: SettingsFormValues = {
+  gymName: "",
+  address: "",
+  phone: "",
+  email: "",
+  instagramUrl: "",
+  facebookUrl: "",
+  twitterUrl: "",
+};
 
 export function SettingsForm({ currentSettings, onSubmit }: SettingsFormProps) {
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsFormSchema),
-    // Default values will be set by useEffect
+    defaultValues: initialFormValues, // Initialize with empty strings
   });
 
   useEffect(() => {
@@ -47,6 +58,11 @@ export function SettingsForm({ currentSettings, onSubmit }: SettingsFormProps) {
         twitterUrl: currentSettings.twitterUrl || "",
       });
     }
+    // It's also safe to reset to initialFormValues if currentSettings is not yet available,
+    // but SettingsClient should prevent rendering this form if currentSettings is null.
+    // else { 
+    //   form.reset(initialFormValues);
+    // }
   }, [currentSettings, form.reset]);
 
   const handleSubmit: SubmitHandler<SettingsFormValues> = (data) => {
