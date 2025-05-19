@@ -107,7 +107,7 @@ export const MOCK_CLASS_SCHEDULES: ClassSchedule[] = [
     totalSlots: 15,
     description: "Entrenamiento de Intervalos de Alta Intensidad para llevar tus límites al máximo y quemar calorías. ¡Prepárate para sudar!",
     iconName: "Flame",
-    imageUrl: "https://placehold.co/600x400.png",
+    imageUrl: "https://images.unsplash.com/photo-1616279969856-759f316a5ac1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxoaWl0fGVufDB8fHx8MTc0NzY5Njg5NXww&ixlib=rb-4.1.0&q=80&w=1080",
     imageHint: "entrenamiento HIIT"
   },
   {
@@ -236,3 +236,4 @@ export const MOCK_PAYMENT_RECORDS: PaymentRecord[] = [
 
 export const PAYMENT_METHODS: PaymentMethod[] = ['Efectivo', 'Tarjeta de Crédito', 'Tarjeta de Débito', 'Transferencia Bancaria', 'Otro'];
 export const PAYMENT_STATUSES: PaymentStatus[] = ['Pagado', 'Pendiente', 'Vencido', 'Cancelado'];
+
