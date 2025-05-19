@@ -1,22 +1,24 @@
 
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google'; 
+import { Poppins } from 'next/font/google'; // Cambiado de Inter a Poppins
 import './globals.css';
 import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/layout/Footer'; // Import Footer
+import { Footer } from '@/components/layout/Footer';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
 import { AuthProvider } from '@/contexts/AuthContext';
-import { GymSettingsProvider } from '@/contexts/GymSettingsContext'; // Import GymSettingsProvider
+import { GymSettingsProvider } from '@/contexts/GymSettingsContext';
 
-const inter = Inter({
+// Configuración para Poppins
+const poppins = Poppins({
   subsets: ['latin'],
-  variable: '--font-sans',
+  weight: ['400', '500', '600', '700'], // Pesos deseados
+  variable: '--font-sans', // Mantener la misma variable CSS
 });
 
 export const metadata: Metadata = {
-  title: 'GymFlow', // This could also be made dynamic later if needed
+  title: 'GymFlow',
   description: 'Sistema Completo de Gestión de Gimnasios',
 };
 
@@ -27,9 +29,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" suppressHydrationWarning>
-      <body className={cn("min-h-screen bg-background font-sans antialiased", inter.variable)}>
+      <body className={cn("min-h-screen bg-background font-sans antialiased", poppins.variable)}> {/* Usar poppins.variable */}
         <AuthProvider>
-          <GymSettingsProvider> {/* Wrap with GymSettingsProvider */}
+          <GymSettingsProvider>
             <ThemeProvider
               attribute="class"
               defaultTheme="system"
@@ -41,7 +43,7 @@ export default function RootLayout({
                 <main className="flex-grow container mx-auto px-4 py-8">
                   {children}
                 </main>
-                <Footer /> {/* Use the new Footer component */}
+                <Footer />
               </div>
               <Toaster />
             </ThemeProvider>
