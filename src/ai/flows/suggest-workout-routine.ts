@@ -26,7 +26,7 @@ const SuggestWorkoutRoutineOutputSchema = z.object({
   workoutRoutine: z
     .string()
     .describe(
-      'A personalized workout routine that includes a list of exercises, sets, reps, and rest times, tailored to the user fitness goal and preferred activities.'
+      'A personalized workout routine that includes a list of exercises, sets, reps, and rest times, tailored to the user fitness goal and preferred activities. The response must be in Spanish.'
     ),
 });
 export type SuggestWorkoutRoutineOutput = z.infer<typeof SuggestWorkoutRoutineOutputSchema>;
@@ -41,12 +41,14 @@ const prompt = ai.definePrompt({
   name: 'suggestWorkoutRoutinePrompt',
   input: {schema: SuggestWorkoutRoutineInputSchema},
   output: {schema: SuggestWorkoutRoutineOutputSchema},
-  prompt: `You are a personal trainer that suggests workout routines.
+  prompt: `Eres un entrenador personal que sugiere rutinas de entrenamiento.
 
-  Based on the user's fitness goal and preferred activities, suggest a workout routine.
+  Basándote en el objetivo de fitness y las actividades preferidas del usuario, sugiere una rutina de entrenamiento.
 
-  Fitness Goal: {{{fitnessGoal}}}
-  Preferred Activities: {{{preferredActivities}}}
+  **IMPORTANTE: Toda tu respuesta debe estar en idioma español.**
+
+  Objetivo de Fitness: {{{fitnessGoal}}}
+  Actividades Preferidas: {{{preferredActivities}}}
   `,
 });
 
