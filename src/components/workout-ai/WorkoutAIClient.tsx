@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -66,7 +67,7 @@ export function WorkoutAIClient() {
     }
     if (!user || !user.email) {
       setEmailSendStatus('error');
-      setEmailSendMessage("Debes iniciar sesión como miembro para enviar la rutina a tu correo.");
+      setEmailSendMessage("Debes iniciar sesión con un correo electrónico registrado para enviar la rutina.");
       return;
     }
 
@@ -183,7 +184,8 @@ export function WorkoutAIClient() {
               {suggestion.workoutRoutine}
             </pre>
           </CardContent>
-          {user && user.role === 'member' && user.email && ( // Solo mostrar si el usuario es miembro y tiene email
+          {/* Condición actualizada para mostrar el botón si el usuario está logueado y tiene email */}
+          {user && user.email && (
             <CardFooter className="flex-col items-start gap-2 pt-4 border-t border-border">
               <Button
                 onClick={handleSendEmail}
