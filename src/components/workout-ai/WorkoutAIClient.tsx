@@ -16,8 +16,8 @@ import { Loader2, Wand2, AlertTriangle } from "lucide-react";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 const workoutFormSchema = z.object({
-  fitnessGoal: z.string().min(3, { message: "Fitness goal must be at least 3 characters." }).max(100),
-  preferredActivities: z.string().min(3, { message: "Preferred activities must be at least 3 characters." }).max(200),
+  fitnessGoal: z.string().min(3, { message: "El objetivo de fitness debe tener al menos 3 caracteres." }).max(100),
+  preferredActivities: z.string().min(3, { message: "Las actividades preferidas deben tener al menos 3 caracteres." }).max(200),
 });
 
 type WorkoutFormValues = z.infer<typeof workoutFormSchema>;
@@ -58,10 +58,10 @@ export function WorkoutAIClient() {
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Wand2 className="mr-2 h-6 w-6 text-accent" />
-                Personalized Workout Suggestion
+                Sugerencia de Entrenamiento Personalizado
               </CardTitle>
               <CardDescription>
-                Tell us your goals and preferences, and our AI will suggest a workout routine for you.
+                Dinos tus objetivos y preferencias, y nuestra IA te sugerirá una rutina de entrenamiento.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -70,16 +70,16 @@ export function WorkoutAIClient() {
                 name="fitnessGoal"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel htmlFor="fitnessGoal">Fitness Goal</FormLabel>
+                    <FormLabel htmlFor="fitnessGoal">Objetivo de Fitness</FormLabel>
                     <FormControl>
                       <Input
                         id="fitnessGoal"
-                        placeholder="e.g., Weight loss, Muscle gain, Endurance"
+                        placeholder="Ej: Pérdida de peso, Ganar músculo, Resistencia"
                         {...field}
                       />
                     </FormControl>
                     <FormDescription>
-                      What do you want to achieve?
+                      ¿Qué quieres lograr?
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -90,17 +90,17 @@ export function WorkoutAIClient() {
                 name="preferredActivities"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel htmlFor="preferredActivities">Preferred Activities</FormLabel>
+                    <FormLabel htmlFor="preferredActivities">Actividades Preferidas</FormLabel>
                     <FormControl>
                       <Textarea
                         id="preferredActivities"
-                        placeholder="e.g., Running, Swimming, Weightlifting, Yoga"
+                        placeholder="Ej: Correr, Nadar, Levantamiento de pesas, Yoga"
                         {...field}
                         rows={3}
                       />
                     </FormControl>
                      <FormDescription>
-                      What kind of activities do you enjoy?
+                      ¿Qué tipo de actividades disfrutas?
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -112,10 +112,10 @@ export function WorkoutAIClient() {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Generating...
+                    Generando...
                   </>
                 ) : (
-                  "Get Suggestion"
+                  "Obtener Sugerencia"
                 )}
               </Button>
             </CardFooter>
@@ -140,7 +140,7 @@ export function WorkoutAIClient() {
       {suggestion && (
         <Card className="shadow-lg bg-secondary">
           <CardHeader>
-            <CardTitle className="text-xl text-secondary-foreground">Your AI-Suggested Workout Routine</CardTitle>
+            <CardTitle className="text-xl text-secondary-foreground">Tu Rutina de Entrenamiento Sugerida por IA</CardTitle>
           </CardHeader>
           <CardContent>
             <pre className="whitespace-pre-wrap text-sm text-secondary-foreground p-4 bg-background rounded-md font-mono overflow-x-auto">

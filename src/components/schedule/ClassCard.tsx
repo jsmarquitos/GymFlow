@@ -29,8 +29,8 @@ export function ClassCard({ classInfo }: ClassCardProps) {
   const handleBooking = () => {
     // Placeholder for booking logic
     toast({
-      title: "Booking Initiated",
-      description: `You've started booking ${classInfo.name}.`,
+      title: "Reserva Iniciada",
+      description: `Has comenzado a reservar ${classInfo.name}.`,
       variant: "default",
     });
   };
@@ -44,7 +44,7 @@ export function ClassCard({ classInfo }: ClassCardProps) {
             alt={classInfo.name}
             layout="fill"
             objectFit="cover"
-            data-ai-hint={classInfo.imageHint || "fitness class"}
+            data-ai-hint={classInfo.imageHint || "clase fitness"}
           />
         </div>
       )}
@@ -54,7 +54,7 @@ export function ClassCard({ classInfo }: ClassCardProps) {
           {classInfo.name}
         </CardTitle>
         <CardDescription>
-          Taught by: {classInfo.instructor}
+          Impartida por: {classInfo.instructor}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-grow space-y-3">
@@ -68,23 +68,23 @@ export function ClassCard({ classInfo }: ClassCardProps) {
         </div>
         <div className="flex items-center text-sm text-muted-foreground">
           <Users className="mr-2 h-4 w-4" />
-          <span>{classInfo.availableSlots} / {classInfo.totalSlots} spots available</span>
+          <span>{classInfo.availableSlots} / {classInfo.totalSlots} cupos disponibles</span>
         </div>
          <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button variant="link" size="sm" className="p-0 h-auto text-accent hover:text-accent/80">
-              <Info className="mr-1 h-4 w-4" /> View Description
+              <Info className="mr-1 h-4 w-4" /> Ver Descripción
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>{classInfo.name} - Description</AlertDialogTitle>
+              <AlertDialogTitle>{classInfo.name} - Descripción</AlertDialogTitle>
               <AlertDialogDescription className="max-h-60 overflow-y-auto py-2">
-                {classInfo.description || "No description available for this class."}
+                {classInfo.description || "No hay descripción disponible para esta clase."}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Close</AlertDialogCancel>
+              <AlertDialogCancel>Cerrar</AlertDialogCancel>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
@@ -95,7 +95,7 @@ export function ClassCard({ classInfo }: ClassCardProps) {
           className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
           disabled={classInfo.availableSlots === 0}
         >
-          {classInfo.availableSlots === 0 ? "Fully Booked" : "Book Class"}
+          {classInfo.availableSlots === 0 ? "Completo" : "Reservar Clase"}
         </Button>
       </CardFooter>
     </Card>

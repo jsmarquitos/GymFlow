@@ -9,10 +9,10 @@ import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/s
 import { useState } from "react";
 
 const navItems: NavItemConfig[] = [
-  { href: "/schedule", label: "Schedule", icon: CalendarDays },
-  { href: "/bookings", label: "My Bookings", icon: Dumbbell },
-  { href: "/workout-ai", label: "Workout AI", icon: Brain },
-  { href: "/profile", label: "Profile", icon: Users },
+  { href: "/schedule", label: "Horario", icon: CalendarDays },
+  { href: "/bookings", label: "Mis Reservas", icon: Dumbbell },
+  { href: "/workout-ai", label: "IA de Entrenamiento", icon: Brain },
+  { href: "/profile", label: "Perfil", icon: Users },
 ];
 
 export function Header() {
@@ -38,7 +38,7 @@ export function Header() {
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
                 <Menu className="h-6 w-6 text-foreground" />
-                <span className="sr-only">Open menu</span>
+                <span className="sr-only">Abrir menú</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-full max-w-xs bg-card p-6">
@@ -50,7 +50,7 @@ export function Header() {
                   <SheetClose asChild>
                     <Button variant="ghost" size="icon">
                       <X className="h-6 w-6 text-foreground" />
-                       <span className="sr-only">Close menu</span>
+                       <span className="sr-only">Cerrar menú</span>
                     </Button>
                   </SheetClose>
                 </div>

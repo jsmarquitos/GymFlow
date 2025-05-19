@@ -12,7 +12,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: 'GymFlow',
-  description: 'Complete Gym Management System',
+  description: 'Sistema Completo de Gestión de Gimnasios',
 };
 
 export default function RootLayout({
@@ -21,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark"> {/* Apply dark class to html for theme */}
+    <html lang="es" className="dark"> {/* Apply dark class to html for theme, lang="es" for Spanish */}
       <body className={cn("min-h-screen bg-background font-sans antialiased", inter.variable)}>
         <div className="flex flex-col min-h-screen">
           <Header />
@@ -29,7 +29,7 @@ export default function RootLayout({
             {children}
           </main>
           <footer className="bg-card shadow-inner py-6 text-center">
-            <p className="text-muted-foreground text-sm">&copy; {new Date().getFullYear()} GymFlow. All rights reserved.</p>
+            <p className="text-muted-foreground text-sm">&copy; {new Date().getFullYear()} GymFlow. Todos los derechos reservados.</p>
           </footer>
         </div>
         <Toaster />

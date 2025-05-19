@@ -10,90 +10,98 @@ import { Dumbbell, Bike, Waves, Zap } from "lucide-react"; // Zap for generic "A
 const mockClasses: ClassSchedule[] = [
   {
     id: "1",
-    name: "Morning Yoga Flow",
+    name: "Flujo de Yoga Matutino",
     instructor: "Sarah Lee",
-    time: "Mon, Wed, Fri - 7:00 AM",
-    duration: "60 minutes",
+    time: "Lun, Mié, Vie - 7:00 AM",
+    duration: "60 minutos",
     availableSlots: 15,
     totalSlots: 20,
-    description: "Start your day with an invigorating yoga session designed to awaken your body and mind. Suitable for all levels.",
-    icon: Zap, // Using Zap as a placeholder, could be specific yoga icon
+    description: "Comienza tu día con una vigorizante sesión de yoga diseñada para despertar tu cuerpo y mente. Apta para todos los niveles.",
+    icon: Zap, 
     imageUrl: "https://placehold.co/600x400.png",
-    imageHint: "yoga class"
+    imageHint: "clase yoga"
   },
   {
     id: "2",
-    name: "HIIT Blast",
+    name: "Explosión HIIT",
     instructor: "Mike Ross",
-    time: "Tue, Thu - 6:00 PM",
-    duration: "45 minutes",
+    time: "Mar, Jue - 6:00 PM",
+    duration: "45 minutos",
     availableSlots: 5,
     totalSlots: 15,
-    description: "High-Intensity Interval Training to push your limits and burn maximum calories. Get ready to sweat!",
+    description: "Entrenamiento de Intervalos de Alta Intensidad para llevar tus límites al máximo y quemar calorías. ¡Prepárate para sudar!",
     icon: Dumbbell,
     imageUrl: "https://placehold.co/600x400.png",
-    imageHint: "HIIT workout"
+    imageHint: "entrenamiento HIIT"
   },
   {
     id: "3",
-    name: "Spin Power Hour",
+    name: "Hora de Poder en Spin",
     instructor: "Jessica Chen",
-    time: "Mon, Wed - 5:30 PM",
-    duration: "60 minutes",
+    time: "Lun, Mié - 5:30 PM",
+    duration: "60 minutos",
     availableSlots: 0,
     totalSlots: 25,
-    description: "An energetic indoor cycling class with upbeat music and challenging terrains. Pedal your way to fitness!",
+    description: "Una clase energética de ciclismo indoor con música animada y terrenos desafiantes. ¡Pedalea hacia tu bienestar!",
     icon: Bike,
     imageUrl: "https://placehold.co/600x400.png",
-    imageHint: "spin class"
+    imageHint: "clase spin"
   },
   {
     id: "4",
-    name: "Aqua Fitness",
+    name: "Fitness Acuático",
     instructor: "David Kim",
-    time: "Sat - 10:00 AM",
-    duration: "50 minutes",
+    time: "Sáb - 10:00 AM",
+    duration: "50 minutos",
     availableSlots: 12,
     totalSlots: 15,
-    description: "Low-impact, high-resistance water workout. Perfect for all fitness levels and gentle on the joints.",
+    description: "Entrenamiento acuático de bajo impacto y alta resistencia. Perfecto para todos los niveles de fitness y suave para las articulaciones.",
     icon: Waves,
     imageUrl: "https://placehold.co/600x400.png",
-    imageHint: "aqua fitness"
+    imageHint: "fitness acuatico"
   },
    {
     id: "5",
-    name: "Strength Training 101",
+    name: "Entrenamiento de Fuerza 101",
     instructor: "Alex Johnson",
-    time: "Tue, Thu - 7:00 AM",
-    duration: "75 minutes",
+    time: "Mar, Jue - 7:00 AM",
+    duration: "75 minutos",
     availableSlots: 8,
     totalSlots: 12,
-    description: "Learn the fundamentals of strength training, focusing on proper form and technique for major lifts.",
+    description: "Aprende los fundamentos del entrenamiento de fuerza, enfocándote en la forma y técnica correctas para los principales levantamientos.",
     icon: Dumbbell,
     imageUrl: "https://placehold.co/600x400.png",
-    imageHint: "weightlifting gym"
+    imageHint: "gimnasio pesas"
   },
   {
     id: "6",
-    name: "Zumba Dance Party",
+    name: "Fiesta de Baile Zumba",
     instructor: "Maria Rodriguez",
-    time: "Fri - 7:00 PM",
-    duration: "60 minutes",
+    time: "Vie - 7:00 PM",
+    duration: "60 minutos",
     availableSlots: 20,
     totalSlots: 30,
-    description: "Dance your way to fitness with this fun and energetic Zumba class. No dance experience required!",
+    description: "Baila hacia el fitness con esta divertida y energética clase de Zumba. ¡No se requiere experiencia en baile!",
     icon: Zap,
     imageUrl: "https://placehold.co/600x400.png",
-    imageHint: "zumba dance"
+    imageHint: "baile zumba"
   },
+];
+
+const dayOptions = [
+  { value: "mon", label: "Lun" },
+  { value: "tue", label: "Mar" },
+  { value: "wed", label: "Mié" },
+  { value: "thu", label: "Jue" },
+  { value: "fri", label: "Vie" },
+  { value: "sat", label: "Sáb" },
+  { value: "sun", label: "Dom" },
 ];
 
 export function ScheduleView() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterDay, setFilterDay] = useState("all"); // e.g., "all", "mon", "tue"
-  const [filterTime, setFilterTime] = useState("all"); // e.g., "all", "morning", "afternoon", "evening"
-
-  const classDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const [filterDay, setFilterDay] = useState("all"); 
+  const [filterTime, setFilterTime] = useState("all"); 
 
   const filteredClasses = useMemo(() => {
     return mockClasses.filter(cls => {
@@ -124,7 +132,7 @@ export function ScheduleView() {
       <div className="flex flex-col md:flex-row gap-4 p-4 bg-card rounded-lg shadow">
         <Input
           type="text"
-          placeholder="Search classes or instructors..."
+          placeholder="Buscar clases o instructores..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="flex-grow"
@@ -132,24 +140,24 @@ export function ScheduleView() {
         <div className="flex gap-4">
           <Select value={filterDay} onValueChange={setFilterDay}>
             <SelectTrigger className="w-full md:w-[180px]">
-              <SelectValue placeholder="Filter by day" />
+              <SelectValue placeholder="Filtrar por día" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Days</SelectItem>
-              {classDays.map(day => (
-                <SelectItem key={day} value={day.toLowerCase()}>{day}</SelectItem>
+              <SelectItem value="all">Todos los Días</SelectItem>
+              {dayOptions.map(day => (
+                <SelectItem key={day.value} value={day.value}>{day.label}</SelectItem>
               ))}
             </SelectContent>
           </Select>
           <Select value={filterTime} onValueChange={setFilterTime}>
             <SelectTrigger className="w-full md:w-[180px]">
-              <SelectValue placeholder="Filter by time" />
+              <SelectValue placeholder="Filtrar por hora" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Times</SelectItem>
-              <SelectItem value="morning">Morning (5am-12pm)</SelectItem>
-              <SelectItem value="afternoon">Afternoon (12pm-6pm)</SelectItem>
-              <SelectItem value="evening">Evening (6pm-12am)</SelectItem>
+              <SelectItem value="all">Todas las Horas</SelectItem>
+              <SelectItem value="morning">Mañana (5am-12pm)</SelectItem>
+              <SelectItem value="afternoon">Tarde (12pm-6pm)</SelectItem>
+              <SelectItem value="evening">Noche (6pm-12am)</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -163,7 +171,7 @@ export function ScheduleView() {
         </div>
       ) : (
         <div className="text-center py-10">
-          <p className="text-xl text-muted-foreground">No classes match your filters.</p>
+          <p className="text-xl text-muted-foreground">Ninguna clase coincide con tus filtros.</p>
         </div>
       )}
     </div>

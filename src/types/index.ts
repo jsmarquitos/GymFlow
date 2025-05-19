@@ -5,7 +5,7 @@ export interface ClassSchedule {
   name: string;
   instructor: string;
   time: string;
-  duration: string; // e.g., "60 minutes"
+  duration: string; // e.g., "60 minutos"
   availableSlots: number;
   totalSlots: number;
   description: string;
@@ -20,7 +20,7 @@ export interface MemberBooking {
   className: string;
   classDate: string; // e.g., "2024-07-15"
   classTime: string; // e.g., "10:00 AM"
-  status: 'Booked' | 'Attended' | 'Cancelled';
+  status: 'Reservada' | 'Asistida' | 'Cancelada';
 }
 
 export interface MemberProfile {

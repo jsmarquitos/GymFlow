@@ -15,21 +15,21 @@ export function BookingHistoryTable({ bookings }: BookingHistoryTableProps) {
     return (
       <div className="text-center py-8">
         <CalendarClock className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-        <p className="text-muted-foreground">No booking history found.</p>
-        <p className="text-sm text-muted-foreground">Start booking classes to see your history here!</p>
+        <p className="text-muted-foreground">No se encontró historial de reservas.</p>
+        <p className="text-sm text-muted-foreground">¡Empieza a reservar clases para ver tu historial aquí!</p>
       </div>
     );
   }
 
   return (
     <Table>
-      <TableCaption>A list of your recent class bookings.</TableCaption>
+      <TableCaption>Una lista de tus reservas de clases recientes.</TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[250px]">Class Name</TableHead>
-          <TableHead>Date</TableHead>
-          <TableHead>Time</TableHead>
-          <TableHead className="text-right">Status</TableHead>
+          <TableHead className="w-[250px]">Nombre de la Clase</TableHead>
+          <TableHead>Fecha</TableHead>
+          <TableHead>Hora</TableHead>
+          <TableHead className="text-right">Estado</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -44,18 +44,18 @@ export function BookingHistoryTable({ bookings }: BookingHistoryTableProps) {
             <TableCell className="text-right">
               <Badge
                 variant={
-                  booking.status === "Attended" ? "default" :
-                  booking.status === "Booked" ? "secondary" :
+                  booking.status === "Asistida" ? "default" :
+                  booking.status === "Reservada" ? "secondary" :
                   "destructive"
                 }
                 className={cn(
-                  booking.status === 'Attended' && 'bg-green-600/80 text-white',
-                  booking.status === 'Booked' && 'bg-blue-500/80 text-white',
-                  booking.status === 'Cancelled' && 'bg-red-600/80 text-white'
+                  booking.status === 'Asistida' && 'bg-green-600/80 text-white',
+                  booking.status === 'Reservada' && 'bg-blue-500/80 text-white',
+                  booking.status === 'Cancelada' && 'bg-red-600/80 text-white'
                 )}
               >
-                {booking.status === 'Attended' && <CheckCircle className="mr-1 h-3 w-3" />}
-                {booking.status === 'Cancelled' && <XCircle className="mr-1 h-3 w-3" />}
+                {booking.status === 'Asistida' && <CheckCircle className="mr-1 h-3 w-3" />}
+                {booking.status === 'Cancelada' && <XCircle className="mr-1 h-3 w-3" />}
                 {booking.status}
               </Badge>
             </TableCell>

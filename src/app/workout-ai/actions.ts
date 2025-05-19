@@ -10,6 +10,6 @@ export async function getAIWorkoutSuggestion(input: SuggestWorkoutRoutineInput):
     console.error("Error getting AI workout suggestion:", error);
     // It's good practice to not expose raw error messages to the client.
     // Log the detailed error on the server and return a generic message.
-    return { error: "Failed to generate workout suggestion. Please try again." };
+    return { error: "Error al generar la sugerencia de entrenamiento. Por favor, inténtalo de nuevo." };
   }
 }

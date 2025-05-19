@@ -20,7 +20,7 @@ export function ProfileDetails({ profile }: ProfileDetailsProps) {
               alt={profile.name}
               layout="fill"
               objectFit="cover"
-              data-ai-hint={profile.profilePictureHint || "person portrait"}
+              data-ai-hint={profile.profilePictureHint || "retrato persona"}
             />
           </div>
           <div>
@@ -32,22 +32,22 @@ export function ProfileDetails({ profile }: ProfileDetailsProps) {
       <CardContent className="space-y-4 pt-4">
         <div className="flex items-center">
           <User className="mr-3 h-5 w-5 text-accent" />
-          <span className="font-medium">Name:</span>
+          <span className="font-medium">Nombre:</span>
           <span className="ml-2 text-muted-foreground">{profile.name}</span>
         </div>
         <div className="flex items-center">
           <Mail className="mr-3 h-5 w-5 text-accent" />
-          <span className="font-medium">Email:</span>
+          <span className="font-medium">Correo:</span>
           <span className="ml-2 text-muted-foreground">{profile.email}</span>
         </div>
         <div className="flex items-center">
           <Award className="mr-3 h-5 w-5 text-accent" />
-          <span className="font-medium">Membership:</span>
+          <span className="font-medium">Membresía:</span>
           <span className="ml-2 text-muted-foreground">{profile.membershipType}</span>
         </div>
         <div className="flex items-center">
           <CalendarCheck2 className="mr-3 h-5 w-5 text-accent" />
-          <span className="font-medium">Joined:</span>
+          <span className="font-medium">Se unió:</span>
           <span className="ml-2 text-muted-foreground">{profile.joinDate}</span>
         </div>
       </CardContent>
