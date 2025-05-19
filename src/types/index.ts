@@ -1,0 +1,41 @@
+import type { LucideIcon } from 'lucide-react';
+
+export interface ClassSchedule {
+  id: string;
+  name: string;
+  instructor: string;
+  time: string;
+  duration: string; // e.g., "60 minutes"
+  availableSlots: number;
+  totalSlots: number;
+  description: string;
+  icon?: LucideIcon; // Optional: Icon for the class type
+  imageUrl?: string; // Optional: Image for the class
+  imageHint?: string; // Optional: AI hint for placeholder image
+}
+
+export interface MemberBooking {
+  id: string;
+  classId: string;
+  className: string;
+  classDate: string; // e.g., "2024-07-15"
+  classTime: string; // e.g., "10:00 AM"
+  status: 'Booked' | 'Attended' | 'Cancelled';
+}
+
+export interface MemberProfile {
+  id: string;
+  name: string;
+  email: string;
+  membershipType: string;
+  joinDate: string; // e.g., "2023-01-20"
+  profilePictureUrl?: string;
+  profilePictureHint?: string;
+  bookings: MemberBooking[];
+}
+
+export interface NavItemConfig {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+}
