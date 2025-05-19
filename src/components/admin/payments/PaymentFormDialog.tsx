@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useMemo } from "react"; // Added React and useMemo
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -50,21 +50,24 @@ interface PaymentFormDialogProps {
 
 export function PaymentFormDialog({ isOpen, onOpenChange, paymentItem, members, onSubmit }: PaymentFormDialogProps) {
   
-  const today = new Date();
-  today.setHours(0, 0, 0, 0); // Normalize to start of day
-
-  const form = useForm<PaymentFormValues>({
-    resolver: zodResolver(paymentFormSchema),
-    defaultValues: {
+  const initialDefaultValues = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return {
       memberId: "",
       paymentDate: today,
       amount: 0,
-      paymentMethod: "Efectivo",
+      paymentMethod: "Efectivo" as PaymentMethod,
       coveredPeriodStart: today,
-      coveredPeriodEnd: new Date(today.getFullYear(), today.getMonth() + 1, today.getDate()), // Default to one month later
-      status: "Pagado",
+      coveredPeriodEnd: new Date(today.getFullYear(), today.getMonth() + 1, today.getDate()),
+      status: "Pagado" as PaymentStatus,
       notes: "",
-    },
+    };
+  }, []);
+
+  const form = useForm<PaymentFormValues>({
+    resolver: zodResolver(paymentFormSchema),
+    defaultValues: initialDefaultValues,
   });
 
   useEffect(() => {
@@ -81,19 +84,10 @@ export function PaymentFormDialog({ isOpen, onOpenChange, paymentItem, members, 
           notes: paymentItem.notes || "",
         });
       } else {
-        form.reset({
-          memberId: "",
-          paymentDate: today,
-          amount: 0,
-          paymentMethod: "Efectivo",
-          coveredPeriodStart: today,
-          coveredPeriodEnd: new Date(today.getFullYear(), today.getMonth() + 1, today.getDate()),
-          status: "Pagado",
-          notes: "",
-        });
+        form.reset(initialDefaultValues);
       }
     }
-  }, [paymentItem, form, isOpen, today]);
+  }, [paymentItem, isOpen, form.reset, initialDefaultValues]);
 
   const handleSubmit: SubmitHandler<PaymentFormValues> = (data) => {
     const submissionData = {
@@ -106,8 +100,7 @@ export function PaymentFormDialog({ isOpen, onOpenChange, paymentItem, members, 
     if (paymentItem) {
       onSubmit({ ...paymentItem, ...submissionData });
     } else {
-      // For new items, 'id' and 'memberName' will be added by the parent client component
-      const { id, memberName, ...rest } = paymentItem || {}; // Remove id and memberName if editing for type safety
+      const { id, memberName, ...rest } = paymentItem || {}; 
       onSubmit(submissionData as Omit<PaymentRecord, 'id' | 'memberName'>);
     }
     onOpenChange(false);

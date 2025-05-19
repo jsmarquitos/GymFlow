@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useEffect } from "react";
+import React, { useEffect, useMemo } from "react"; // Added React and useMemo
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -18,8 +19,8 @@ const memberFormSchema = z.object({
   status: z.enum(["Activo", "Inactivo", "Suspendido"], {
     errorMap: () => ({ message: "Debe seleccionar un estado válido." }),
   }),
-  subscriptionPlanId: z.string().nullable().optional(), // Puede ser nulo o no estar presente
-  joinDate: z.string().optional(), // Se manejará automáticamente si es nuevo
+  subscriptionPlanId: z.string().nullable().optional(), 
+  joinDate: z.string().optional(), 
   profilePictureUrl: z.string().url().optional().or(z.literal('')),
   profilePictureHint: z.string().optional(),
 });
@@ -35,6 +36,8 @@ interface MemberFormDialogProps {
 }
 
 export function MemberFormDialog({ isOpen, onOpenChange, member, availablePlans, onSubmit }: MemberFormDialogProps) {
+  const defaultJoinDate = useMemo(() => new Date().toISOString().split('T')[0], []);
+
   const form = useForm<MemberFormValues>({
     resolver: zodResolver(memberFormSchema),
     defaultValues: {
@@ -42,42 +45,44 @@ export function MemberFormDialog({ isOpen, onOpenChange, member, availablePlans,
       email: "",
       status: "Activo",
       subscriptionPlanId: null,
-      joinDate: new Date().toISOString().split('T')[0], // Default to today
+      joinDate: defaultJoinDate,
       profilePictureUrl: "",
       profilePictureHint: "persona avatar",
     },
   });
 
   useEffect(() => {
-    if (member) {
-      form.reset({
-        name: member.name,
-        email: member.email,
-        status: member.status,
-        subscriptionPlanId: member.subscriptionPlanId,
-        joinDate: member.joinDate, // Mantener la fecha original si se edita
-        profilePictureUrl: member.profilePictureUrl || "",
-        profilePictureHint: member.profilePictureHint || "persona avatar",
-      });
-    } else {
-      form.reset({ // Valores por defecto para nuevo miembro
-        name: "",
-        email: "",
-        status: "Activo",
-        subscriptionPlanId: null,
-        joinDate: new Date().toISOString().split('T')[0],
-        profilePictureUrl: "",
-        profilePictureHint: "persona avatar",
-      });
+    if (isOpen) {
+      if (member) {
+        form.reset({
+          name: member.name,
+          email: member.email,
+          status: member.status,
+          subscriptionPlanId: member.subscriptionPlanId,
+          joinDate: member.joinDate,
+          profilePictureUrl: member.profilePictureUrl || "",
+          profilePictureHint: member.profilePictureHint || "persona avatar",
+        });
+      } else {
+        form.reset({ 
+          name: "",
+          email: "",
+          status: "Activo",
+          subscriptionPlanId: null,
+          joinDate: defaultJoinDate,
+          profilePictureUrl: "",
+          profilePictureHint: "persona avatar",
+        });
+      }
     }
-  }, [member, form, isOpen]); // Re-ejecutar cuando isOpen cambia para resetear bien
+  }, [member, isOpen, form.reset, defaultJoinDate]);
 
   const handleSubmit: SubmitHandler<MemberFormValues> = (data) => {
     const submissionData: AdminMember = {
-      ...(member || { id: "", joinDate: new Date().toISOString().split('T')[0] }), // Preserve ID and joinDate if editing
+      ...(member || { id: "", joinDate: defaultJoinDate }), 
       ...data,
-      id: member ? member.id : `new_${Date.now()}`, // Generate new ID if not editing
-      joinDate: member ? member.joinDate : data.joinDate || new Date().toISOString().split('T')[0], // Use existing or new joinDate
+      id: member ? member.id : `new_${Date.now()}`, 
+      joinDate: member ? member.joinDate : data.joinDate || defaultJoinDate,
       subscriptionPlanId: data.subscriptionPlanId || null,
     };
     onSubmit(submissionData);

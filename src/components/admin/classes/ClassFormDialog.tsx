@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect } from "react";
+import React, { useEffect, useMemo } from "react"; // Added React and useMemo
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -40,6 +40,9 @@ interface ClassFormDialogProps {
 }
 
 export function ClassFormDialog({ isOpen, onOpenChange, classItem, onSubmit }: ClassFormDialogProps) {
+  const initialIconName = useMemo(() => iconOptions[0]?.value || "", []); // Memoize initial icon
+  const initialTotalSlots = 10; // Constant
+
   const form = useForm<ClassFormValues>({
     resolver: zodResolver(classFormSchema),
     defaultValues: {
@@ -48,16 +51,16 @@ export function ClassFormDialog({ isOpen, onOpenChange, classItem, onSubmit }: C
       time: "",
       duration: "",
       availableSlots: 0,
-      totalSlots: 0,
+      totalSlots: initialTotalSlots,
       description: "",
-      iconName: iconOptions[0]?.value || "", // Default to first icon or empty
+      iconName: initialIconName,
       imageUrl: "",
       imageHint: "",
     },
   });
 
   useEffect(() => {
-    if (isOpen) { // Reset form when dialog opens or classItem changes
+    if (isOpen) { 
       if (classItem) {
         form.reset({
           name: classItem.name,
@@ -67,7 +70,7 @@ export function ClassFormDialog({ isOpen, onOpenChange, classItem, onSubmit }: C
           availableSlots: classItem.availableSlots,
           totalSlots: classItem.totalSlots,
           description: classItem.description || "",
-          iconName: classItem.iconName || iconOptions[0]?.value || "",
+          iconName: classItem.iconName || initialIconName,
           imageUrl: classItem.imageUrl || "",
           imageHint: classItem.imageHint || "",
         });
@@ -78,15 +81,15 @@ export function ClassFormDialog({ isOpen, onOpenChange, classItem, onSubmit }: C
           time: "",
           duration: "",
           availableSlots: 0,
-          totalSlots: 10, // Default total slots for new class
+          totalSlots: initialTotalSlots, 
           description: "",
-          iconName: iconOptions[0]?.value || "",
+          iconName: initialIconName,
           imageUrl: "",
           imageHint: "",
         });
       }
     }
-  }, [classItem, form, isOpen]);
+  }, [classItem, isOpen, form.reset, initialIconName]); // Use form.reset and memoized initialIconName
 
   const handleSubmit: SubmitHandler<ClassFormValues> = (data) => {
     if (classItem) {
@@ -195,7 +198,7 @@ export function ClassFormDialog({ isOpen, onOpenChange, classItem, onSubmit }: C
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Icono de la Clase</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} defaultValue={field.value || initialIconName}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Selecciona un icono" />

@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useEffect } from "react";
+import React, { useEffect, useMemo } from "react"; // Added React and useMemo
 import { useForm, type SubmitHandler, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -34,15 +35,17 @@ interface SubscriptionPlanFormDialogProps {
 }
 
 export function SubscriptionPlanFormDialog({ isOpen, onOpenChange, plan, onSubmit }: SubscriptionPlanFormDialogProps) {
+  const defaultFormValues = useMemo(() => ({
+    name: "",
+    price: 0,
+    duration: "Mensual" as SubscriptionPlan['duration'],
+    description: "",
+    features: [{ value: "" }],
+  }), []);
+  
   const form = useForm<PlanFormValues>({
     resolver: zodResolver(planFormSchema),
-    defaultValues: {
-      name: "",
-      price: 0,
-      duration: "Mensual",
-      description: "",
-      features: [{ value: "" }],
-    },
+    defaultValues: defaultFormValues,
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -51,29 +54,25 @@ export function SubscriptionPlanFormDialog({ isOpen, onOpenChange, plan, onSubmi
   });
 
   useEffect(() => {
-    if (plan) {
-      form.reset({
-        name: plan.name,
-        price: plan.price,
-        duration: plan.duration,
-        description: plan.description || "",
-        features: plan.features.map(f => ({ value: f })),
-      });
-    } else {
-      form.reset({
-        name: "",
-        price: 0,
-        duration: "Mensual",
-        description: "",
-        features: [{ value: "" }],
-      });
+    if (isOpen) {
+      if (plan) {
+        form.reset({
+          name: plan.name,
+          price: plan.price,
+          duration: plan.duration,
+          description: plan.description || "",
+          features: plan.features.map(f => ({ value: f })),
+        });
+      } else {
+        form.reset(defaultFormValues);
+      }
     }
-  }, [plan, form, isOpen]);
+  }, [plan, isOpen, form.reset, defaultFormValues]);
 
   const handleSubmit: SubmitHandler<PlanFormValues> = (data) => {
     const submissionData = {
       ...data,
-      features: data.features.map(f => f.value), // Extraer solo el string de cada característica
+      features: data.features.map(f => f.value), 
     };
     if (plan) {
       onSubmit({ ...plan, ...submissionData });
