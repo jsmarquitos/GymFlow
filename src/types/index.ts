@@ -4,12 +4,12 @@ export interface ClassSchedule {
   id: string;
   name: string;
   instructor: string;
-  time: string;
+  time: string; // e.g., "Lun, Mié, Vie - 7:00 AM"
   duration: string; // e.g., "60 minutos"
   availableSlots: number;
   totalSlots: number;
   description: string;
-  icon?: LucideIcon; // Optional: Icon for the class type
+  iconName?: string; // Nombre del icono de Lucide (e.g., "Dumbbell")
   imageUrl?: string; // Optional: Image for the class
   imageHint?: string; // Optional: AI hint for placeholder image
 }

@@ -1,11 +1,13 @@
+
 "use client";
 
 import Image from "next/image";
 import type { ClassSchedule } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Users, Clock, CalendarDays, Dumbbell, Info } from "lucide-react";
+import { Users, Clock, CalendarDays, Info, Dumbbell } from "lucide-react"; // Dumbbell as fallback
 import { useToast } from "@/hooks/use-toast";
+import { getIconComponent } from "@/lib/icons";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,7 +26,7 @@ interface ClassCardProps {
 
 export function ClassCard({ classInfo }: ClassCardProps) {
   const { toast } = useToast();
-  const IconComponent = classInfo.icon || Dumbbell;
+  const IconComponent = getIconComponent(classInfo.iconName);
 
   const handleBooking = () => {
     // Placeholder for booking logic

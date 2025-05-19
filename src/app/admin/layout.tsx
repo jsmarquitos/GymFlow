@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Users, CreditCard } from "lucide-react";
+import { Users, CreditCard, Activity } from "lucide-react";
 
 export default function AdminLayout({
   children,
@@ -11,7 +11,7 @@ export default function AdminLayout({
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-3xl font-bold text-primary">Panel de Administración</h1>
-        <nav className="flex gap-2">
+        <nav className="flex flex-wrap gap-2">
           <Button asChild variant="outline" size="sm">
             <Link href="/admin/members">
               <Users className="mr-2 h-4 w-4" /> Miembros
@@ -20,6 +20,11 @@ export default function AdminLayout({
           <Button asChild variant="outline" size="sm">
             <Link href="/admin/subscriptions">
               <CreditCard className="mr-2 h-4 w-4" /> Planes
+            </Link>
+          </Button>
+          <Button asChild variant="outline" size="sm">
+            <Link href="/admin/classes">
+              <Activity className="mr-2 h-4 w-4" /> Clases
             </Link>
           </Button>
         </nav>
