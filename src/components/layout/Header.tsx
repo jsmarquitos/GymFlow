@@ -8,6 +8,7 @@ import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import { useAuth } from '@/hooks/useAuth';
 import type { NavItemConfig } from '@/types';
 import { NavItem } from './NavItem';
+import { useState } from 'react'; // Importar useState
 
 const allNavItems: NavItemConfig[] = [
   { href: "/schedule", label: "Horario", icon: CalendarDays },
@@ -19,15 +20,13 @@ const allNavItems: NavItemConfig[] = [
 
 export function Header() {
   const { user, logout, isLoading } = useAuth();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false); // Estado para el menú móvil
 
   const navItems = allNavItems.filter(item => {
     if (item.requiresAuth && !user) return false;
     if (item.adminOnly && user?.role !== 'admin') return false;
     return true;
   });
-
-  // State for mobile menu (optional, if you want a hamburger menu for smaller screens)
-  // const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -65,7 +64,7 @@ export function Header() {
             variant="ghost" 
             size="icon" 
             className="md:hidden" 
-            // onClick={() => setMobileMenuOpen(!mobileMenuOpen)} // Toggle mobile menu
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)} // Toggle mobile menu
           >
             <Menu className="h-6 w-6" />
             <span className="sr-only">Abrir menú</span>
@@ -73,29 +72,31 @@ export function Header() {
         </div>
       </div>
 
-      {/* Mobile Navigation Menu (optional, if you implement toggle) */}
-      {/* {mobileMenuOpen && (
-        <div className="md:hidden border-t">
+      {/* Mobile Navigation Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t bg-background">
           <nav className="flex flex-col space-y-1 p-4">
             {navItems.map((item) => (
               <NavItem key={item.href} {...item} />
             ))}
-            {!isLoading && (
-              user ? (
-                <Button variant="ghost" onClick={logout} className="justify-start text-destructive">
-                  <LogOut className="mr-2 h-5 w-5" /> Cerrar Sesión
-                </Button>
-              ) : (
-                <Button variant="default" asChild className="justify-start">
-                  <Link href="/login">
-                    <LogIn className="mr-2 h-5 w-5" /> Iniciar Sesión
-                  </Link>
-                </Button>
-              )
-            )}
+            <div className="border-t pt-2 mt-2">
+              {!isLoading && (
+                user ? (
+                  <Button variant="ghost" onClick={() => { logout(); setMobileMenuOpen(false); }} className="w-full justify-start text-destructive">
+                    <LogOut className="mr-2 h-5 w-5" /> Cerrar Sesión
+                  </Button>
+                ) : (
+                  <Button variant="default" asChild className="w-full justify-start" onClick={() => setMobileMenuOpen(false)}>
+                    <Link href="/login">
+                      <LogIn className="mr-2 h-5 w-5" /> Iniciar Sesión
+                    </Link>
+                  </Button>
+                )
+              )}
+            </div>
           </nav>
         </div>
-      )} */}
+      )}
     </header>
   );
 }
