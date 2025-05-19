@@ -5,8 +5,9 @@ import Image from "next/image";
 import type { ClassSchedule } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Users, Clock, CalendarDays, Info, Dumbbell } from "lucide-react"; // Dumbbell as fallback
+import { Users, Clock, CalendarDays, Info } from "lucide-react"; 
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { getIconComponent } from "@/lib/icons";
 import {
   AlertDialog,
@@ -22,19 +23,47 @@ import {
 
 interface ClassCardProps {
   classInfo: ClassSchedule;
+  onBookClass: (classId: string) => void;
 }
 
-export function ClassCard({ classInfo }: ClassCardProps) {
+export function ClassCard({ classInfo, onBookClass }: ClassCardProps) {
   const { toast } = useToast();
+  const { user } = useAuth();
   const IconComponent = getIconComponent(classInfo.iconName);
 
   const handleBooking = () => {
-    // Placeholder for booking logic
-    toast({
-      title: "Reserva Iniciada",
-      description: `Has comenzado a reservar ${classInfo.name}.`,
-      variant: "default",
-    });
+    if (!user) {
+      toast({
+        title: "Acción Requerida",
+        description: "Debes iniciar sesión como miembro para reservar una clase.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (user.role === 'admin') {
+      toast({
+        title: "Función no disponible",
+        description: "Los administradores no pueden reservar clases.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (classInfo.availableSlots > 0) {
+      onBookClass(classInfo.id);
+      toast({
+        title: "Reserva Iniciada",
+        description: `Has comenzado a reservar ${classInfo.name}. Revisa "Mis Reservas" para confirmar.`,
+        variant: "default",
+      });
+    } else {
+      toast({
+        title: "Clase Completa",
+        description: "No quedan cupos disponibles para esta clase.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

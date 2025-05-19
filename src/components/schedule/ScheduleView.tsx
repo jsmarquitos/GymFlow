@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState, useMemo } from "react";
 import { MOCK_CLASS_SCHEDULES } from "@/lib/constants"; // Importar desde constants
+import type { ClassSchedule } from "@/types";
 
 const dayOptions = [
   { value: "all", label: "Todos los Días" },
@@ -23,17 +24,25 @@ export function ScheduleView() {
   const [filterDay, setFilterDay] = useState("all"); 
   const [filterTime, setFilterTime] = useState("all"); 
   
-  // En una app real, las clases vendrían de una API o estado global.
-  // Por ahora, usamos los datos mock de constants.
-  const classes = MOCK_CLASS_SCHEDULES;
+  // Usar estado para las clases para poder actualizarlas
+  const [currentClasses, setCurrentClasses] = useState<ClassSchedule[]>(MOCK_CLASS_SCHEDULES);
 
+  const handleClassBooked = (classId: string) => {
+    setCurrentClasses(prevClasses =>
+      prevClasses.map(cls => {
+        if (cls.id === classId && cls.availableSlots > 0) {
+          return { ...cls, availableSlots: cls.availableSlots - 1 };
+        }
+        return cls;
+      })
+    );
+  };
 
   const filteredClasses = useMemo(() => {
-    return classes.filter(cls => {
+    return currentClasses.filter(cls => {
       const nameMatch = cls.name.toLowerCase().includes(searchTerm.toLowerCase());
       const instructorMatch = cls.instructor.toLowerCase().includes(searchTerm.toLowerCase());
       
-      // Mejoramos la lógica del día para que sea más flexible
       const dayMatch = filterDay === "all" || 
         cls.time.toLowerCase().split(/[,-]/).some(part => part.trim().startsWith(filterDay.toLowerCase()));
       
@@ -53,7 +62,7 @@ export function ScheduleView() {
 
       return (nameMatch || instructorMatch) && dayMatch && timeOfDayMatch;
     });
-  }, [searchTerm, filterDay, filterTime, classes]);
+  }, [searchTerm, filterDay, filterTime, currentClasses]);
 
   return (
     <div className="space-y-6">
@@ -93,7 +102,11 @@ export function ScheduleView() {
       {filteredClasses.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredClasses.map((classInfo) => (
-            <ClassCard key={classInfo.id} classInfo={classInfo} />
+            <ClassCard 
+              key={classInfo.id} 
+              classInfo={classInfo} 
+              onBookClass={handleClassBooked} 
+            />
           ))}
         </div>
       ) : (
