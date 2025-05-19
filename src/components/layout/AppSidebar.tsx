@@ -48,7 +48,8 @@ export function AppSidebar() {
         </Link>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarMenu>
+        {/* Increased gap for more vertical spacing between menu items */}
+        <SidebarMenu className="gap-1.5">
           {navItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
             return (
