@@ -88,10 +88,10 @@ export interface User {
 // Tipo para la configuración general del gimnasio
 export interface GymSettings {
   gymName: string;
-  address: string;
-  phone: string;
-  email: string;
-  instagramUrl: string;
-  facebookUrl: string;
-  twitterUrl: string;
+  address?: string; // Optional, as per form
+  phone?: string; // Optional
+  email?: string; // Optional
+  instagramUrl?: string; // Optional
+  facebookUrl?: string; // Optional
+  twitterUrl?: string; // Optional
 }

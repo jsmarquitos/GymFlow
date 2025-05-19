@@ -1,6 +1,7 @@
 
 "use client";
 
+import React, { useEffect } from 'react'; // Import useEffect
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -9,12 +10,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Globe, Instagram, Facebook, Twitter, Save } from "lucide-react"; // Added Save icon
+import { Globe, Instagram, Facebook, Twitter, Save } from "lucide-react";
 
 const settingsFormSchema = z.object({
   gymName: z.string().min(3, "El nombre del gimnasio debe tener al menos 3 caracteres.").max(100),
-  address: z.string().max(300, "La dirección no puede exceder los 300 caracteres.").optional(),
-  phone: z.string().max(30, "El teléfono no puede exceder los 30 caracteres.").optional(),
+  address: z.string().max(300, "La dirección no puede exceder los 300 caracteres.").optional().or(z.literal('')),
+  phone: z.string().max(30, "El teléfono no puede exceder los 30 caracteres.").optional().or(z.literal('')),
   email: z.string().email("Formato de email inválido.").max(100).optional().or(z.literal('')),
   instagramUrl: z.string().url("Debe ser una URL válida para Instagram.").max(200).optional().or(z.literal('')),
   facebookUrl: z.string().url("Debe ser una URL válida para Facebook.").max(200).optional().or(z.literal('')),
@@ -24,23 +25,29 @@ const settingsFormSchema = z.object({
 type SettingsFormValues = z.infer<typeof settingsFormSchema>;
 
 interface SettingsFormProps {
-  currentSettings: GymSettings;
+  currentSettings: GymSettings; // Will come from context via SettingsClient
   onSubmit: (data: SettingsFormValues) => void;
 }
 
 export function SettingsForm({ currentSettings, onSubmit }: SettingsFormProps) {
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsFormSchema),
-    defaultValues: {
-      gymName: currentSettings.gymName || "",
-      address: currentSettings.address || "",
-      phone: currentSettings.phone || "",
-      email: currentSettings.email || "",
-      instagramUrl: currentSettings.instagramUrl || "",
-      facebookUrl: currentSettings.facebookUrl || "",
-      twitterUrl: currentSettings.twitterUrl || "",
-    },
+    // Default values will be set by useEffect
   });
+
+  useEffect(() => {
+    if (currentSettings) {
+      form.reset({
+        gymName: currentSettings.gymName || "",
+        address: currentSettings.address || "",
+        phone: currentSettings.phone || "",
+        email: currentSettings.email || "",
+        instagramUrl: currentSettings.instagramUrl || "",
+        facebookUrl: currentSettings.facebookUrl || "",
+        twitterUrl: currentSettings.twitterUrl || "",
+      });
+    }
+  }, [currentSettings, form.reset]);
 
   const handleSubmit: SubmitHandler<SettingsFormValues> = (data) => {
     onSubmit(data);

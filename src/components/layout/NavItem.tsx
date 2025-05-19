@@ -1,21 +1,23 @@
 
 "use client";
 
-// This component might no longer be needed if SidebarMenuButton handles all cases.
-// Keeping it for now in case of specific use cases, but it's largely replaced.
-
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import type { NavItemConfig } from "@/types";
+import type { NavItemConfig } from "@/types"; // Assuming NavItemConfig is defined in @/types
 import { Button } from "@/components/ui/button";
 
-export function NavItem({ href, label, icon: Icon }: NavItemConfig) {
+// Adding onClick to NavItemConfig for mobile menu closure
+interface NavItemProps extends NavItemConfig {
+  onClick?: () => void;
+}
+
+export function NavItem({ href, label, icon: Icon, onClick }: NavItemProps) {
   const pathname = usePathname();
   const isActive = pathname === href || (href !== "/" && pathname.startsWith(href));
 
   return (
-    <Button asChild variant={isActive ? "secondary" : "ghost"} size="sm">
+    <Button asChild variant={isActive ? "secondary" : "ghost"} size="sm" onClick={onClick}>
       <Link href={href} className={cn("flex items-center space-x-2 rounded-md px-3 py-2 transition-colors",
         isActive ? "text-primary-foreground bg-primary hover:bg-primary/90" : "text-foreground hover:bg-accent hover:text-accent-foreground"
       )}>

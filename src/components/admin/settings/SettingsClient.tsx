@@ -1,30 +1,34 @@
 
 "use client";
 
-import { useState } from "react";
 import type { GymSettings } from "@/types";
 import { SettingsForm } from "./SettingsForm";
 import { useToast } from "@/hooks/use-toast";
+import { useGymSettings } from "@/hooks/useGymSettings"; // Import useGymSettings
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
 
-interface SettingsClientProps {
-  initialSettings: GymSettings;
-}
-
-export function SettingsClient({ initialSettings }: SettingsClientProps) {
-  const [settings, setSettings] = useState<GymSettings>(initialSettings);
+export function SettingsClient() {
+  const { settings, updateSettings, isLoading } = useGymSettings(); // Use context
   const { toast } = useToast();
 
-  const handleSubmit = (updatedSettings: GymSettings) => {
-    // En una aplicación real, aquí harías una llamada a una API para guardar los cambios.
-    console.log("Guardando configuración:", updatedSettings);
-    setSettings(updatedSettings);
+  const handleSubmit = (updatedSettingsData: GymSettings) => {
+    updateSettings(updatedSettingsData); // Update settings via context
     toast({
       title: "Configuración Guardada",
-      description: "Los datos generales del gimnasio han sido actualizados (simulación).",
+      description: "Los datos generales del gimnasio han sido actualizados.",
       variant: "default",
     });
   };
+
+  if (isLoading || !settings) {
+    return (
+      <div className="flex justify-center items-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="ml-2 text-muted-foreground">Cargando configuración...</p>
+      </div>
+    );
+  }
 
   return (
     <Card className="shadow-lg">
