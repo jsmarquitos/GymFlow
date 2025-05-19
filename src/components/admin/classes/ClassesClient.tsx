@@ -4,7 +4,7 @@
 import { useState } from "react";
 import type { ClassSchedule } from "@/types";
 import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
+import { Loader2, PlusCircle } from "lucide-react"; // Added Loader2
 import { ClassesTable } from "./ClassesTable";
 import { ClassFormDialog } from "./ClassFormDialog";
 import {
@@ -17,29 +17,41 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useClassSchedules } from "@/hooks/useClassSchedules"; // Import useClassSchedules
+import { useToast } from "@/hooks/use-toast";
 
-interface ClassesClientProps {
-  initialClasses: ClassSchedule[];
-}
+export function ClassesClient() {
+  const { 
+    classes, 
+    addClass, 
+    updateClass, 
+    deleteClass: deleteClassFromContext, // Renamed to avoid conflict
+    isLoading: isLoadingContext 
+  } = useClassSchedules();
+  const { toast } = useToast();
 
-export function ClassesClient({ initialClasses }: ClassesClientProps) {
-  const [classes, setClasses] = useState<ClassSchedule[]>(initialClasses);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingClass, setEditingClass] = useState<ClassSchedule | null>(null);
   const [deletingClassId, setDeletingClassId] = useState<string | null>(null);
 
-  const handleAddClass = (newClass: Omit<ClassSchedule, 'id'>) => {
-    setClasses(prev => [...prev, { ...newClass, id: `class_${Date.now()}` }]);
+  const handleAddClass = (newClassData: Omit<ClassSchedule, 'id'>) => {
+    addClass(newClassData);
+    toast({ title: "Clase Añadida", description: `La clase "${newClassData.name}" ha sido creada.` });
   };
 
-  const handleUpdateClass = (updatedClass: ClassSchedule) => {
-    setClasses(prev => prev.map(c => c.id === updatedClass.id ? updatedClass : c));
+  const handleUpdateClass = (updatedClassData: ClassSchedule) => {
+    updateClass(updatedClassData);
+    toast({ title: "Clase Actualizada", description: `La clase "${updatedClassData.name}" ha sido actualizada.` });
   };
 
   const handleDeleteClass = () => {
     if (deletingClassId) {
-      setClasses(prev => prev.filter(c => c.id !== deletingClassId));
+      const classToDelete = classes.find(c => c.id === deletingClassId);
+      deleteClassFromContext(deletingClassId);
       setDeletingClassId(null);
+      if (classToDelete) {
+        toast({ title: "Clase Eliminada", description: `La clase "${classToDelete.name}" ha sido eliminada.`, variant: "destructive" });
+      }
     }
   };
 
@@ -57,6 +69,15 @@ export function ClassesClient({ initialClasses }: ClassesClientProps) {
     setDeletingClassId(classId);
   };
 
+  if (isLoadingContext) {
+    return (
+      <div className="flex justify-center items-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="ml-2 text-muted-foreground">Cargando clases...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
@@ -67,7 +88,7 @@ export function ClassesClient({ initialClasses }: ClassesClientProps) {
       </div>
       
       <ClassesTable
-        classes={classes}
+        classes={classes} // Use classes from context
         onEdit={openFormForEdit}
         onDelete={openDeleteConfirm}
       />

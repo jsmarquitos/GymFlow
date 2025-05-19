@@ -4,15 +4,16 @@
 import { ClassCard } from "./ClassCard";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState, useMemo } from "react";
-import { MOCK_CLASS_SCHEDULES } from "@/lib/constants"; // Importar desde constants
+import { useState, useMemo, useEffect } from "react";
 import type { ClassSchedule } from "@/types";
+import { useClassSchedules } from "@/hooks/useClassSchedules"; // Import context hook
+import { Loader2 } from "lucide-react"; // For loading state
 
 const dayOptions = [
   { value: "all", label: "Todos los Días" },
   { value: "lun", label: "Lunes" },
   { value: "mar", label: "Martes" },
-  { value: "mié", label: "Miércoles" }, // Abreviaturas consistentes con lo que pueda buscar el usuario
+  { value: "mié", label: "Miércoles" },
   { value: "jue", label: "Jueves" },
   { value: "vie", label: "Viernes" },
   { value: "sáb", label: "Sábado" },
@@ -20,26 +21,39 @@ const dayOptions = [
 ];
 
 export function ScheduleView() {
+  const { classes: classesFromContext, isLoading: isLoadingContext, updateClassSlots } = useClassSchedules();
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [filterDay, setFilterDay] = useState("all"); 
   const [filterTime, setFilterTime] = useState("all"); 
   
-  // Usar estado para las clases para poder actualizarlas
-  const [currentClasses, setCurrentClasses] = useState<ClassSchedule[]>(MOCK_CLASS_SCHEDULES);
+  // Local state for display, synchronized with context
+  const [displayClasses, setDisplayClasses] = useState<ClassSchedule[]>([]);
+
+  useEffect(() => {
+    // Sync local displayClasses with context classes when context changes or finishes loading
+    if (!isLoadingContext) {
+      setDisplayClasses(classesFromContext);
+    }
+  }, [classesFromContext, isLoadingContext]);
 
   const handleClassBooked = (classId: string) => {
-    setCurrentClasses(prevClasses =>
+    setDisplayClasses(prevClasses =>
       prevClasses.map(cls => {
         if (cls.id === classId && cls.availableSlots > 0) {
-          return { ...cls, availableSlots: cls.availableSlots - 1 };
+          const newSlots = cls.availableSlots - 1;
+          // Update context as well so this change persists if user navigates away and back
+          updateClassSlots(classId, newSlots); 
+          return { ...cls, availableSlots: newSlots };
         }
         return cls;
       })
     );
+    // The toast for booking is handled in ClassCard
   };
 
   const filteredClasses = useMemo(() => {
-    return currentClasses.filter(cls => {
+    return displayClasses.filter(cls => {
       const nameMatch = cls.name.toLowerCase().includes(searchTerm.toLowerCase());
       const instructorMatch = cls.instructor.toLowerCase().includes(searchTerm.toLowerCase());
       
@@ -52,7 +66,7 @@ export function ScheduleView() {
         classHour = parseInt(timeParts[1]);
         const period = timeParts[3]?.toUpperCase();
         if (period === "PM" && classHour !== 12) classHour += 12;
-        if (period === "AM" && classHour === 12) classHour = 0; // Medianoche
+        if (period === "AM" && classHour === 12) classHour = 0; 
       }
       
       const timeOfDayMatch = filterTime === "all" ||
@@ -62,7 +76,16 @@ export function ScheduleView() {
 
       return (nameMatch || instructorMatch) && dayMatch && timeOfDayMatch;
     });
-  }, [searchTerm, filterDay, filterTime, currentClasses]);
+  }, [searchTerm, filterDay, filterTime, displayClasses]);
+
+  if (isLoadingContext) {
+    return (
+      <div className="flex justify-center items-center min-h-[calc(100vh-300px)]">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <p className="ml-3 text-lg text-muted-foreground">Cargando horarios...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

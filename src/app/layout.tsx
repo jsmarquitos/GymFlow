@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { GymSettingsProvider } from '@/contexts/GymSettingsContext';
+import { ClassScheduleProvider } from '@/contexts/ClassScheduleContext'; // Import ClassScheduleProvider
 
 // Configuración para Poppins
 const poppins = Poppins({
@@ -32,21 +33,23 @@ export default function RootLayout({
       <body className={cn("min-h-screen bg-background font-sans antialiased", poppins.variable)}> {/* Usar poppins.variable */}
         <AuthProvider>
           <GymSettingsProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <div className="flex flex-col min-h-screen">
-                <Header />
-                <main className="flex-grow container mx-auto px-4 py-8">
-                  {children}
-                </main>
-                <Footer />
-              </div>
-              <Toaster />
-            </ThemeProvider>
+            <ClassScheduleProvider> {/* Wrap with ClassScheduleProvider */}
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+              >
+                <div className="flex flex-col min-h-screen">
+                  <Header />
+                  <main className="flex-grow container mx-auto px-4 py-8">
+                    {children}
+                  </main>
+                  <Footer />
+                </div>
+                <Toaster />
+              </ThemeProvider>
+            </ClassScheduleProvider>
           </GymSettingsProvider>
         </AuthProvider>
       </body>
