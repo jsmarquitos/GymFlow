@@ -4,15 +4,15 @@ import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { getAIWorkoutSuggestion } from "@/app/workout-ai/actions";
+import { getAIWorkoutSuggestion, sendWorkoutByEmail } from "@/app/workout-ai/actions";
 import type { SuggestWorkoutRoutineOutput } from "@/ai/flows/suggest-workout-routine";
+import { useAuth } from "@/hooks/useAuth";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Wand2, AlertTriangle } from "lucide-react";
+import { Loader2, Wand2, AlertTriangle, Send } from "lucide-react";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 const workoutFormSchema = z.object({
@@ -27,6 +27,12 @@ export function WorkoutAIClient() {
   const [suggestion, setSuggestion] = useState<SuggestWorkoutRoutineOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [emailSendStatus, setEmailSendStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [emailSendMessage, setEmailSendMessage] = useState<string | null>(null);
+
+  const { user } = useAuth();
+
   const form = useForm<WorkoutFormValues>({
     resolver: zodResolver(workoutFormSchema),
     defaultValues: {
@@ -39,6 +45,8 @@ export function WorkoutAIClient() {
     setIsLoading(true);
     setSuggestion(null);
     setError(null);
+    setEmailSendStatus('idle'); // Reset email status on new suggestion
+    setEmailSendMessage(null);
 
     const result = await getAIWorkoutSuggestion(data);
 
@@ -48,6 +56,34 @@ export function WorkoutAIClient() {
       setSuggestion(result);
     }
     setIsLoading(false);
+  };
+
+  const handleSendEmail = async () => {
+    if (!suggestion || !suggestion.workoutRoutine ) {
+      setEmailSendStatus('error');
+      setEmailSendMessage("No hay rutina para enviar o falta información del usuario.");
+      return;
+    }
+    if (!user || !user.email) {
+      setEmailSendStatus('error');
+      setEmailSendMessage("Debes iniciar sesión como miembro para enviar la rutina a tu correo.");
+      return;
+    }
+
+
+    setIsSendingEmail(true);
+    setEmailSendMessage(null);
+
+    const result = await sendWorkoutByEmail(suggestion.workoutRoutine, user.email);
+
+    if ("error" in result || (result && !result.success)) {
+      setEmailSendStatus('error');
+      setEmailSendMessage(result.error || (result && result.message) || "Ocurrió un error al enviar el correo.");
+    } else if (result && result.success) {
+      setEmailSendStatus('success');
+      setEmailSendMessage(result.message || "Rutina enviada exitosamente por correo.");
+    }
+    setIsSendingEmail(false);
   };
 
   return (
@@ -128,7 +164,7 @@ export function WorkoutAIClient() {
           <CardHeader>
             <CardTitle className="flex items-center text-destructive">
               <AlertTriangle className="mr-2 h-6 w-6" />
-              Error
+              Error al generar sugerencia
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -138,7 +174,7 @@ export function WorkoutAIClient() {
       )}
 
       {suggestion && (
-        <Card className="shadow-lg bg-secondary">
+        <Card className="shadow-lg bg-secondary mt-8">
           <CardHeader>
             <CardTitle className="text-xl text-secondary-foreground">Tu Rutina de Entrenamiento Sugerida por IA</CardTitle>
           </CardHeader>
@@ -147,6 +183,32 @@ export function WorkoutAIClient() {
               {suggestion.workoutRoutine}
             </pre>
           </CardContent>
+          {user && user.role === 'member' && user.email && ( // Solo mostrar si el usuario es miembro y tiene email
+            <CardFooter className="flex-col items-start gap-2 pt-4 border-t border-border">
+              <Button
+                onClick={handleSendEmail}
+                disabled={isSendingEmail || !suggestion?.workoutRoutine}
+                className="bg-accent hover:bg-accent/90 text-accent-foreground"
+              >
+                {isSendingEmail ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Enviando...
+                  </>
+                ) : (
+                  <>
+                    <Send className="mr-2 h-4 w-4" />
+                    Enviar Rutina a mi Correo
+                  </>
+                )}
+              </Button>
+              {emailSendMessage && (
+                <p className={`text-xs mt-2 ${emailSendStatus === 'error' ? 'text-destructive-foreground' : 'text-muted-foreground'}`}>
+                  {emailSendMessage}
+                </p>
+              )}
+            </CardFooter>
+          )}
         </Card>
       )}
     </div>

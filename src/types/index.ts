@@ -66,4 +66,5 @@ export interface AdminMember {
 // Tipo para el usuario autenticado
 export interface User {
   role: 'admin' | 'member';
+  email?: string; // Añadido para poder enviar correos
 }

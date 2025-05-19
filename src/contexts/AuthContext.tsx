@@ -35,6 +35,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback((role: 'admin' | 'member') => {
     const newUser: User = { role };
+    if (role === 'member') {
+      newUser.email = 'miembro@gymflow.com'; // Email mock para miembro
+    } else if (role === 'admin') {
+      newUser.email = 'admin@gymflow.com'; // Email mock para admin
+    }
     setUser(newUser);
     localStorage.setItem('currentUser', JSON.stringify(newUser));
     router.push('/'); 
