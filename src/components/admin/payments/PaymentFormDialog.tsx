@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useEffect, useMemo } from "react"; // Added React and useMemo
+import React, { useEffect, useMemo, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -10,15 +10,17 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import { PAYMENT_METHODS, PAYMENT_STATUSES } from "@/lib/constants";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 
 const paymentFormSchema = z.object({
   memberId: z.string().min(1, "Debe seleccionar un miembro."),
@@ -100,7 +102,7 @@ export function PaymentFormDialog({ isOpen, onOpenChange, paymentItem, members, 
     if (paymentItem) {
       onSubmit({ ...paymentItem, ...submissionData });
     } else {
-      const { id, memberName, ...rest } = paymentItem || {}; 
+      // const { id, memberName, ...rest } = paymentItem || {}; // This line seems to have a typo, paymentItem might be null here.
       onSubmit(submissionData as Omit<PaymentRecord, 'id' | 'memberName'>);
     }
     onOpenChange(false);
@@ -121,20 +123,56 @@ export function PaymentFormDialog({ isOpen, onOpenChange, paymentItem, members, 
               control={form.control}
               name="memberId"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col">
                   <FormLabel>Miembro</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value || undefined}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecciona un miembro" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {members.map(member => (
-                        <SelectItem key={member.id} value={member.id}>{member.name} ({member.email})</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            "w-full justify-between",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value
+                            ? members.find(
+                                (member) => member.id === field.value
+                              )?.name
+                            : "Selecciona un miembro"}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                      <Command>
+                        <CommandInput placeholder="Buscar miembro..." />
+                        <CommandEmpty>No se encontró ningún miembro.</CommandEmpty>
+                        <CommandGroup>
+                          {members.map((member) => (
+                            <CommandItem
+                              value={member.id} // Use member.id as the value for onSelect
+                              key={member.id}
+                              onSelect={(currentValue) => { // currentValue is member.id
+                                field.onChange(currentValue);
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  member.id === field.value
+                                    ? "opacity-100"
+                                    : "opacity-0"
+                                )}
+                              />
+                              {member.name} ({member.email})
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                   <FormMessage />
                 </FormItem>
               )}
@@ -153,7 +191,7 @@ export function PaymentFormDialog({ isOpen, onOpenChange, paymentItem, members, 
                           <Button
                             variant={"outline"}
                             className={cn(
-                              "pl-3 text-left font-normal",
+                              "w-full pl-3 text-left font-normal",
                               !field.value && "text-muted-foreground"
                             )}
                           >
@@ -252,7 +290,7 @@ export function PaymentFormDialog({ isOpen, onOpenChange, paymentItem, members, 
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
-                            <Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
+                            <Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
                               {field.value ? format(field.value, "PPP", { locale: es }) : <span>Elige una fecha</span>}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
@@ -275,7 +313,7 @@ export function PaymentFormDialog({ isOpen, onOpenChange, paymentItem, members, 
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
-                            <Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
+                            <Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
                               {field.value ? format(field.value, "PPP", { locale: es }) : <span>Elige una fecha</span>}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
@@ -318,3 +356,5 @@ export function PaymentFormDialog({ isOpen, onOpenChange, paymentItem, members, 
     </Dialog>
   );
 }
+
+    
