@@ -7,6 +7,7 @@ import { CalendarDays, Dumbbell, Users, Brain, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { useState } from "react";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 const navItems: NavItemConfig[] = [
   { href: "/schedule", label: "Horario", icon: CalendarDays },
@@ -25,15 +26,19 @@ export function Header() {
           GymFlow
         </Link>
         
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex space-x-2">
-          {navItems.map((item) => (
-            <NavItem key={item.href} {...item} />
-          ))}
-        </nav>
+        {/* Desktop Navigation & Theme Toggle */}
+        <div className="hidden md:flex items-center space-x-2">
+          <nav className="flex space-x-2">
+            {navItems.map((item) => (
+              <NavItem key={item.href} {...item} />
+            ))}
+          </nav>
+          <ThemeToggle />
+        </div>
 
-        {/* Mobile Navigation */}
-        <div className="md:hidden">
+        {/* Mobile Navigation & Theme Toggle */}
+        <div className="md:hidden flex items-center space-x-2">
+          <ThemeToggle />
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
