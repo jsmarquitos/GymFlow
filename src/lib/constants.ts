@@ -1,4 +1,4 @@
-import type { SubscriptionPlan, AdminMember, ClassSchedule, MemberBooking, PaymentRecord } from "@/types";
+import type { SubscriptionPlan, AdminMember, ClassSchedule, MemberBooking, PaymentRecord, PaymentMethod, PaymentStatus } from "@/types";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -94,7 +94,7 @@ export const MOCK_CLASS_SCHEDULES: ClassSchedule[] = [
     totalSlots: 20,
     description: "Comienza tu día con una vigorizante sesión de yoga diseñada para despertar tu cuerpo y mente. Apta para todos los niveles.",
     iconName: "Leaf", 
-    imageUrl: "https://placehold.co/600x400.png",
+    imageUrl: "https://images.unsplash.com/photo-1549576490-b0b4831ef60a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxOHx8eW9nYXxlbnwwfHx8fDE3NDc2OTY3OTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
     imageHint: "clase yoga"
   },
   {
