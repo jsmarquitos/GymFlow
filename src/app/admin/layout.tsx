@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Users, CreditCard, Activity, Loader2, Receipt } from "lucide-react"; // Added Receipt
+import { Users, CreditCard, Activity, Loader2, Receipt, Settings } from "lucide-react"; // Added Settings
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -60,6 +60,11 @@ export default function AdminLayout({
           <Button asChild variant="outline" size="sm">
             <Link href="/admin/payments">
               <Receipt className="mr-2 h-4 w-4" /> Pagos
+            </Link>
+          </Button>
+          <Button asChild variant="outline" size="sm">
+            <Link href="/admin/settings">
+              <Settings className="mr-2 h-4 w-4" /> Configuración
             </Link>
           </Button>
         </nav>

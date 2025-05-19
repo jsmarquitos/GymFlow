@@ -79,10 +79,19 @@ export interface PaymentRecord {
   notes?: string; // Notas adicionales sobre el pago
 }
 
-
 // Tipo para el usuario autenticado
 export interface User {
   role: 'admin' | 'member';
   email?: string; // Añadido para poder enviar correos
 }
 
+// Tipo para la configuración general del gimnasio
+export interface GymSettings {
+  gymName: string;
+  address: string;
+  phone: string;
+  email: string;
+  instagramUrl: string;
+  facebookUrl: string;
+  twitterUrl: string;
+}

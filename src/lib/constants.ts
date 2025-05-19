@@ -1,5 +1,5 @@
 
-import type { SubscriptionPlan, AdminMember, ClassSchedule, MemberBooking, PaymentRecord, PaymentMethod, PaymentStatus } from "@/types";
+import type { SubscriptionPlan, AdminMember, ClassSchedule, MemberBooking, PaymentRecord, PaymentMethod, PaymentStatus, GymSettings } from "@/types";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -94,7 +94,7 @@ export const MOCK_CLASS_SCHEDULES: ClassSchedule[] = [
     availableSlots: 15,
     totalSlots: 20,
     description: "Comienza tu día con una vigorizante sesión de yoga diseñada para despertar tu cuerpo y mente. Apta para todos los niveles.",
-    iconName: "Leaf", 
+    iconName: "Leaf",
     imageUrl: "https://images.unsplash.com/photo-1549576490-b0b4831ef60a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxOHx8eW9nYXxlbnwwfHx8fDE3NDc2OTY3OTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
     imageHint: "clase yoga"
   },
@@ -238,5 +238,12 @@ export const MOCK_PAYMENT_RECORDS: PaymentRecord[] = [
 export const PAYMENT_METHODS: PaymentMethod[] = ['Efectivo', 'Tarjeta de Crédito', 'Tarjeta de Débito', 'Transferencia Bancaria', 'Otro'];
 export const PAYMENT_STATUSES: PaymentStatus[] = ['Pagado', 'Pendiente', 'Vencido', 'Cancelado'];
 
-
-    
+export const MOCK_GYM_SETTINGS: GymSettings = {
+  gymName: "GymFlow Pro",
+  address: "Calle Falsa 123, Ciudad Ejemplo, País",
+  phone: "+1 (555) 123-4567",
+  email: "info@gymflow.com",
+  instagramUrl: "https://instagram.com/gymflow",
+  facebookUrl: "https://facebook.com/gymflow",
+  twitterUrl: "https://twitter.com/gymflow",
+};
