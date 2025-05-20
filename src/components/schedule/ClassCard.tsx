@@ -5,10 +5,11 @@ import Image from "next/image";
 import type { ClassSchedule } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Users, Clock, CalendarDays, Info } from "lucide-react"; 
+import { Users, Clock, CalendarDays, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { getIconComponent } from "@/lib/icons";
+import { MOCK_MEMBER_BOOKINGS } from "@/lib/constants"; // Import mock bookings
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,6 +32,12 @@ export function ClassCard({ classInfo, onBookClass }: ClassCardProps) {
   const { user } = useAuth();
   const IconComponent = getIconComponent(classInfo.iconName);
 
+  // Check if the current user (simulated) has already booked this class and it's active
+  const isAlreadyBookedByCurrentUser = user && user.role === 'member' ? MOCK_MEMBER_BOOKINGS.some(
+    (booking) => booking.classId === classInfo.id && booking.status === "Reservada"
+    // In a real app, you'd check against the actual current user's ID and their active bookings
+  ) : false;
+
   const handleBooking = () => {
     if (!user) {
       toast({
@@ -50,6 +57,15 @@ export function ClassCard({ classInfo, onBookClass }: ClassCardProps) {
       return;
     }
 
+    if (isAlreadyBookedByCurrentUser) {
+      toast({
+        title: "Clase Ya Reservada",
+        description: "Ya tienes una reserva activa para esta clase.",
+        variant: "default", // Changed from destructive to default/info
+      });
+      return;
+    }
+
     if (classInfo.availableSlots > 0) {
       onBookClass(classInfo.id);
       toast({
@@ -57,6 +73,9 @@ export function ClassCard({ classInfo, onBookClass }: ClassCardProps) {
         description: `Has comenzado a reservar ${classInfo.name}. Revisa "Mis Reservas" para confirmar.`,
         variant: "default",
       });
+      // Note: To make 'isAlreadyBookedByCurrentUser' reflect this new booking immediately
+      // without page reload, MOCK_MEMBER_BOOKINGS would need to be part of a mutable state (e.g., Context).
+      // For now, this handles re-booking based on the initial state of MOCK_MEMBER_BOOKINGS.
     } else {
       toast({
         title: "Clase Completa",
@@ -121,12 +140,16 @@ export function ClassCard({ classInfo, onBookClass }: ClassCardProps) {
         </AlertDialog>
       </CardContent>
       <CardFooter>
-        <Button 
-          onClick={handleBooking} 
+        <Button
+          onClick={handleBooking}
           className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-          disabled={classInfo.availableSlots === 0}
+          disabled={classInfo.availableSlots === 0 || isAlreadyBookedByCurrentUser}
         >
-          {classInfo.availableSlots === 0 ? "Completo" : "Reservar Clase"}
+          {isAlreadyBookedByCurrentUser
+            ? "Ya Reservada"
+            : classInfo.availableSlots === 0
+            ? "Completo"
+            : "Reservar Clase"}
         </Button>
       </CardFooter>
     </Card>
