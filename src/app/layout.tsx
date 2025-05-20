@@ -1,6 +1,6 @@
 
 import type { Metadata } from 'next';
-import { Poppins } from 'next/font/google'; // Cambiado de Inter a Poppins
+import { Poppins } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
@@ -9,13 +9,13 @@ import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { GymSettingsProvider } from '@/contexts/GymSettingsContext';
-import { ClassScheduleProvider } from '@/contexts/ClassScheduleContext'; // Import ClassScheduleProvider
+import { ClassScheduleProvider } from '@/contexts/ClassScheduleContext';
+import { RoutineProvider } from '@/contexts/RoutineContext'; // Import RoutineProvider
 
-// Configuración para Poppins
 const poppins = Poppins({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'], // Pesos deseados
-  variable: '--font-sans', // Mantener la misma variable CSS
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-sans',
 });
 
 export const metadata: Metadata = {
@@ -30,25 +30,27 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" suppressHydrationWarning>
-      <body className={cn("min-h-screen bg-background font-sans antialiased", poppins.variable)}> {/* Usar poppins.variable */}
+      <body className={cn("min-h-screen bg-background font-sans antialiased", poppins.variable)}>
         <AuthProvider>
           <GymSettingsProvider>
-            <ClassScheduleProvider> {/* Wrap with ClassScheduleProvider */}
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="system"
-                enableSystem
-                disableTransitionOnChange
-              >
-                <div className="flex flex-col min-h-screen">
-                  <Header />
-                  <main className="flex-grow container mx-auto px-4 py-8 animate-fadeInPage">
-                    {children}
-                  </main>
-                  <Footer />
-                </div>
-                <Toaster />
-              </ThemeProvider>
+            <ClassScheduleProvider>
+              <RoutineProvider> {/* Wrap with RoutineProvider */}
+                <ThemeProvider
+                  attribute="class"
+                  defaultTheme="system"
+                  enableSystem
+                  disableTransitionOnChange
+                >
+                  <div className="flex flex-col min-h-screen">
+                    <Header />
+                    <main className="flex-grow container mx-auto px-4 py-8 animate-fadeInPage">
+                      {children}
+                    </main>
+                    <Footer />
+                  </div>
+                  <Toaster />
+                </ThemeProvider>
+              </RoutineProvider>
             </ClassScheduleProvider>
           </GymSettingsProvider>
         </AuthProvider>
