@@ -1,3 +1,4 @@
+
 import type { LucideIcon } from 'lucide-react';
 
 export interface ClassSchedule {
@@ -42,7 +43,7 @@ export interface NavItemConfig {
   requiresAuth?: boolean;
   instructorOnly?: boolean;
   memberOnly?: boolean;
-  instructorAllowed?: boolean; // Nuevo: para indicar si los instructores pueden ver este item de admin
+  instructorAllowed?: boolean;
 }
 
 // Tipos para el Panel de Administración
@@ -109,7 +110,7 @@ export interface RoutineExercise {
   restPeriod?: string; // Ej: "60-90s"
   notes?: string; // Notas específicas del ejercicio
   order: number; // Para ordenar los ejercicios dentro del día
-  // isCompleted no se gestiona aquí, es para la vista del miembro
+  routineDayId?: string; // Added to link exercise to its day, useful if exercises are flat
 }
 
 export interface RoutineDay {
@@ -124,10 +125,21 @@ export interface Routine {
   id: string;
   name: string;
   assignedToMemberId: string | null; // Puede ser null si es una plantilla
-  // assignedToMemberName?: string; // Opcional, para visualización
   assignedByInstructorName: string; // Nombre del instructor que la crea/asigna
   startDate: string; // YYYY-MM-DD
   endDate: string; // YYYY-MM-DD
   notes?: string; // Notas generales de la rutina
   days: RoutineDay[];
+}
+
+// Tipo para Instructores
+export interface Instructor {
+  id: string;
+  name: string;
+  email: string;
+  specialization: string; // Ej: "Yoga, Pilates", "Entrenamiento de Fuerza"
+  bio?: string;
+  profilePictureUrl?: string;
+  profilePictureHint?: string;
+  joinDate: string; // formato "yyyy-MM-dd"
 }

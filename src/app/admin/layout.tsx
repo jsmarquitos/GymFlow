@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Users, CreditCard, Activity, Loader2, Receipt, Settings, ClipboardList, Dumbbell } from "lucide-react";
+import { Users, CreditCard, Activity, Loader2, Receipt, Settings, ClipboardList, Dumbbell, UserCog } from "lucide-react"; // Added UserCog
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -11,12 +11,13 @@ import { cn } from "@/lib/utils";
 import type { NavItemConfig } from "@/types";
 
 const allAdminNavItems: NavItemConfig[] = [
-  { href: "/admin/members", label: "Miembros", icon: Users, adminOnly: false, instructorAllowed: true }, // Visible para admin e instructor
-  { href: "/admin/subscriptions", label: "Planes", icon: CreditCard, adminOnly: true }, // Solo admin
-  { href: "/admin/classes", label: "Clases", icon: Activity, adminOnly: false, instructorAllowed: true }, // Visible para admin e instructor
-  { href: "/admin/payments", label: "Pagos", icon: Receipt, adminOnly: true }, // Solo admin
-  { href: "/admin/routines-management", label: "Gestión de Rutinas", icon: Dumbbell, adminOnly: false, instructorAllowed: true }, // Visible para admin e instructor
-  { href: "/admin/settings", label: "Configuración", icon: Settings, adminOnly: true }, // Solo admin
+  { href: "/admin/members", label: "Miembros", icon: Users, adminOnly: false, instructorAllowed: true }, 
+  { href: "/admin/instructors", label: "Instructores", icon: UserCog, adminOnly: true }, // Nuevo, solo admin
+  { href: "/admin/subscriptions", label: "Planes", icon: CreditCard, adminOnly: true }, 
+  { href: "/admin/classes", label: "Clases", icon: Activity, adminOnly: false, instructorAllowed: true }, 
+  { href: "/admin/payments", label: "Pagos", icon: Receipt, adminOnly: true }, 
+  { href: "/admin/routines-management", label: "Gestión de Rutinas", icon: Dumbbell, adminOnly: false, instructorAllowed: true }, 
+  { href: "/admin/settings", label: "Configuración", icon: Settings, adminOnly: true }, 
 ];
 
 export default function AdminLayout({
@@ -30,9 +31,9 @@ export default function AdminLayout({
   const [isVerifying, setIsVerifying] = useState(true);
 
   const visibleNavItems = allAdminNavItems.filter(item => {
-    if (!user) return false; // Si no hay usuario, no mostrar nada
-    if (user.role === 'admin') return true; // Admin ve todo
-    if (user.role === 'instructor' && item.instructorAllowed) return true; // Instructor ve items permitidos
+    if (!user) return false; 
+    if (user.role === 'admin') return true; 
+    if (user.role === 'instructor' && item.instructorAllowed) return true; 
     return false;
   });
 
@@ -41,16 +42,17 @@ export default function AdminLayout({
       if (!user || (user.role !== 'admin' && user.role !== 'instructor')) {
         router.replace('/');
       } else {
-        // Adicional: Redirigir si un instructor intenta acceder a una ruta solo de admin
         const currentItem = allAdminNavItems.find(item => pathname.startsWith(item.href));
         if (user.role === 'instructor' && currentItem && currentItem.adminOnly && !currentItem.instructorAllowed) {
-          router.replace('/admin/members'); // O a la primera página permitida para instructor
+           // Si un instructor intenta acceder a una ruta solo de admin y no permitida para instructor
+          const firstAllowedInstructorPage = visibleNavItems.length > 0 ? visibleNavItems[0].href : '/';
+          router.replace(firstAllowedInstructorPage);
         } else {
           setIsVerifying(false);
         }
       }
     }
-  }, [user, authIsLoading, router, pathname]);
+  }, [user, authIsLoading, router, pathname, visibleNavItems]); // Added visibleNavItems to dependencies
 
   if (authIsLoading || isVerifying) {
     return (

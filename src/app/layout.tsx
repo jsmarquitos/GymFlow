@@ -10,7 +10,8 @@ import { ThemeProvider } from '@/components/theme/ThemeProvider';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { GymSettingsProvider } from '@/contexts/GymSettingsContext';
 import { ClassScheduleProvider } from '@/contexts/ClassScheduleContext';
-import { RoutineProvider } from '@/contexts/RoutineContext'; // Import RoutineProvider
+import { RoutineProvider } from '@/contexts/RoutineContext';
+import { InstructorProvider } from '@/contexts/InstructorContext'; // Import InstructorProvider
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -34,22 +35,24 @@ export default function RootLayout({
         <AuthProvider>
           <GymSettingsProvider>
             <ClassScheduleProvider>
-              <RoutineProvider> {/* Wrap with RoutineProvider */}
-                <ThemeProvider
-                  attribute="class"
-                  defaultTheme="system"
-                  enableSystem
-                  disableTransitionOnChange
-                >
-                  <div className="flex flex-col min-h-screen">
-                    <Header />
-                    <main className="flex-grow container mx-auto px-4 py-8 animate-fadeInPage">
-                      {children}
-                    </main>
-                    <Footer />
-                  </div>
-                  <Toaster />
-                </ThemeProvider>
+              <RoutineProvider>
+                <InstructorProvider> {/* Wrap with InstructorProvider */}
+                  <ThemeProvider
+                    attribute="class"
+                    defaultTheme="system"
+                    enableSystem
+                    disableTransitionOnChange
+                  >
+                    <div className="flex flex-col min-h-screen">
+                      <Header />
+                      <main className="flex-grow container mx-auto px-4 py-8 animate-fadeInPage">
+                        {children}
+                      </main>
+                      <Footer />
+                    </div>
+                    <Toaster />
+                  </ThemeProvider>
+                </InstructorProvider>
               </RoutineProvider>
             </ClassScheduleProvider>
           </GymSettingsProvider>

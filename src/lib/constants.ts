@@ -1,6 +1,6 @@
 
-import type { SubscriptionPlan, AdminMember, ClassSchedule, MemberBooking, PaymentRecord, PaymentMethod, PaymentStatus, GymSettings, MemberProfile, Routine, RoutineDay, RoutineExercise } from "@/types";
-import { format, subDays, addDays } from "date-fns"; // Added subDays, addDays
+import type { SubscriptionPlan, AdminMember, ClassSchedule, MemberBooking, PaymentRecord, PaymentMethod, PaymentStatus, GymSettings, MemberProfile, Routine, RoutineDay, RoutineExercise, Instructor } from "@/types";
+import { format, subDays, addDays } from "date-fns";
 import { es } from "date-fns/locale";
 
 export const MOCK_SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
@@ -71,13 +71,13 @@ export const MOCK_ADMIN_MEMBERS: AdminMember[] = [
     profilePictureUrl: "https://placehold.co/100x100.png",
     profilePictureHint: "mujer joven",
   },
-  { // Añadido para que MOCK_MEMBER_PROFILE tenga un registro en AdminMember
+  { 
     id: "user123_alex_ryder",
     name: "Alex Ryder",
     email: "miembro@gymflow.com",
     joinDate: "2023-01-15",
     status: "Activo",
-    subscriptionPlanId: "plan_premium_mensual", // Asumiendo que Alex tiene un plan premium
+    subscriptionPlanId: "plan_premium_mensual", 
     profilePictureUrl: "https://placehold.co/100x100.png",
     profilePictureHint: "persona avatar",
   }
@@ -270,7 +270,6 @@ export const MOCK_GYM_SETTINGS: GymSettings = {
   twitterUrl: "https://twitter.com/gymflow",
 };
 
-// Mock data para la vista del miembro (separado de lo que gestionará el admin inicialmente)
 export const MOCK_MEMBER_VIEW_ROUTINE: Routine = {
   id: "routine_member_001",
   name: "Rutina de Fuerza y Resistencia (Asignada)",
@@ -286,9 +285,9 @@ export const MOCK_MEMBER_VIEW_ROUTINE: Routine = {
       order: 1,
       description: "Enfócate en movimientos compuestos para la parte superior del cuerpo.",
       exercises: [
-        { id: "ex_member_001", name: "Press de Banca Plano", sets: "3-4", reps: "6-10", weight: "Progresivo", restPeriod: "90s", order: 1 },
-        { id: "ex_member_002", name: "Press Militar con Barra (de pie)", sets: "3", reps: "8-12", weight: "Progresivo", restPeriod: "75s", order: 2 },
-        { id: "ex_member_003", name: "Fondos en Paralelas (o banco)", sets: "3", reps: "Al fallo", weight: "Corporal", restPeriod: "75s", order: 3 },
+        { id: "ex_member_001", name: "Press de Banca Plano", sets: "3-4", reps: "6-10", weight: "Progresivo", restPeriod: "90s", order: 1, routineDayId: "day_member_001" },
+        { id: "ex_member_002", name: "Press Militar con Barra (de pie)", sets: "3", reps: "8-12", weight: "Progresivo", restPeriod: "75s", order: 2, routineDayId: "day_member_001" },
+        { id: "ex_member_003", name: "Fondos en Paralelas (o banco)", sets: "3", reps: "Al fallo", weight: "Corporal", restPeriod: "75s", order: 3, routineDayId: "day_member_001" },
       ]
     },
     {
@@ -297,8 +296,8 @@ export const MOCK_MEMBER_VIEW_ROUTINE: Routine = {
       order: 2,
       description: "Trabaja la espalda en todos sus ángulos y complementa con bíceps.",
       exercises: [
-        { id: "ex_member_004", name: "Dominadas (o Jalón al Pecho)", sets: "3-4", reps: "Al fallo / 8-12", weight: "Corporal / Progresivo", restPeriod: "90s", order: 1 },
-        { id: "ex_member_005", name: "Remo con Barra", sets: "3", reps: "8-12", weight: "Progresivo", restPeriod: "75s", order: 2 },
+        { id: "ex_member_004", name: "Dominadas (o Jalón al Pecho)", sets: "3-4", reps: "Al fallo / 8-12", weight: "Corporal / Progresivo", restPeriod: "90s", order: 1, routineDayId: "day_member_002" },
+        { id: "ex_member_005", name: "Remo con Barra", sets: "3", reps: "8-12", weight: "Progresivo", restPeriod: "75s", order: 2, routineDayId: "day_member_002" },
       ]
     },
     {
@@ -307,21 +306,18 @@ export const MOCK_MEMBER_VIEW_ROUTINE: Routine = {
       order: 3,
       description: "Un día dedicado a fortalecer todo el tren inferior.",
       exercises: [
-        { id: "ex_member_006", name: "Sentadilla Trasera con Barra", sets: "3-4", reps: "6-10", weight: "Progresivo", restPeriod: "120s", order: 1 },
-        { id: "ex_member_007", name: "Peso Muerto Rumano con Mancuernas", sets: "3", reps: "10-15", weight: "Moderado", restPeriod: "90s", order: 2 },
+        { id: "ex_member_006", name: "Sentadilla Trasera con Barra", sets: "3-4", reps: "6-10", weight: "Progresivo", restPeriod: "120s", order: 1, routineDayId: "day_member_003" },
+        { id: "ex_member_007", name: "Peso Muerto Rumano con Mancuernas", sets: "3", reps: "10-15", weight: "Moderado", restPeriod: "90s", order: 2, routineDayId: "day_member_003" },
       ]
     }
   ]
 };
 
-
-// Mock data para la gestión de rutinas por el instructor/admin (CONTEXTO)
-// Estas rutinas serán gestionadas por RoutineContext.
 export const INITIAL_CONTEXT_ROUTINES: Routine[] = [
   {
     id: "ctx_routine_strength_template",
     name: "Plantilla: Fuerza General 3 Días",
-    assignedToMemberId: null, // Es una plantilla
+    assignedToMemberId: null, 
     assignedByInstructorName: "Sistema",
     startDate: formatDate(new Date(), "yyyy-MM-dd"),
     endDate: formatDate(addDays(new Date(), 30), "yyyy-MM-dd"),
@@ -365,7 +361,7 @@ export const INITIAL_CONTEXT_ROUTINES: Routine[] = [
   {
     id: "ctx_routine_cardio_focus_laura_v",
     name: "Rutina Cardio: Laura Vargas",
-    assignedToMemberId: "member_002", // ID de Laura Vargas de MOCK_ADMIN_MEMBERS
+    assignedToMemberId: "member_002", 
     assignedByInstructorName: "Ana Entrenadora",
     startDate: formatDate(subDays(new Date(), 7), "yyyy-MM-dd"),
     endDate: formatDate(addDays(new Date(), 23), "yyyy-MM-dd"),
@@ -400,4 +396,36 @@ export const INITIAL_CONTEXT_ROUTINES: Routine[] = [
       }
     ]
   }
+];
+
+export const MOCK_INSTRUCTORS: Instructor[] = [
+  {
+    id: "instr_001",
+    name: "Ana Entrenadora",
+    email: "ana.e@gymflow.com",
+    specialization: "Yoga, Pilates, Funcional",
+    bio: "Instructora certificada con más de 10 años de experiencia ayudando a personas a alcanzar sus metas de bienestar.",
+    profilePictureUrl: "https://placehold.co/100x100.png",
+    profilePictureHint: "mujer sonriendo",
+    joinDate: "2020-03-10",
+  },
+  {
+    id: "instr_002",
+    name: "Luis Coach",
+    email: "luis.c@gymflow.com",
+    specialization: "Entrenamiento de Fuerza, Halterofilia",
+    bio: "Apasionado por el levantamiento de pesas y el desarrollo de la fuerza máxima. Programas personalizados.",
+    profilePictureUrl: "https://placehold.co/100x100.png",
+    profilePictureHint: "hombre fuerte",
+    joinDate: "2022-08-01",
+  },
+  {
+    id: "instr_003",
+    name: "Sofia Trainer",
+    email: "sofia.t@gymflow.com",
+    specialization: "HIIT, Cardio, Preparación Física General",
+    profilePictureUrl: "https://placehold.co/100x100.png",
+    profilePictureHint: "mujer atletica",
+    joinDate: "2023-01-15",
+  },
 ];
