@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useState, useMemo, useEffect } from "react";
 import type { ClassSchedule } from "@/types";
 import { useClassSchedules } from "@/hooks/useClassSchedules"; // Import context hook
-import { Loader2 } from "lucide-react"; // For loading state
+import { Loader2, Search } from "lucide-react"; // Import Search icon
 
 const dayOptions = [
   { value: "all", label: "Todos los Días" },
@@ -27,23 +27,20 @@ export function ScheduleView() {
   const [filterDay, setFilterDay] = useState("all"); 
   const [filterTime, setFilterTime] = useState("all"); 
   
-  // Local state for display, synchronized with context
   const [displayClasses, setDisplayClasses] = useState<ClassSchedule[]>([]);
 
   useEffect(() => {
-    // Sync local displayClasses with context classes when context changes or finishes loading
     if (!isLoadingContext) {
       setDisplayClasses(classesFromContext);
     }
   }, [classesFromContext, isLoadingContext]);
 
   const handleClassBooked = (classId: string) => {
-    // Find the class in the current local displayClasses to ensure it's bookable
     const classToBookLocally = displayClasses.find(c => c.id === classId);
 
     if (classToBookLocally && classToBookLocally.availableSlots > 0) {
       const newLocalAvailableSlots = classToBookLocally.availableSlots - 1;
-
+      
       // Update the local state for immediate UI feedback
       setDisplayClasses(prevDisplayClasses =>
         prevDisplayClasses.map(cls =>
@@ -52,11 +49,9 @@ export function ScheduleView() {
             : cls
         )
       );
-
       // Then, update the context state for persistence and global consistency
       updateClassSlots(classId, newLocalAvailableSlots);
     }
-    // The toast for booking is handled in ClassCard
   };
 
   const filteredClasses = useMemo(() => {
@@ -97,13 +92,16 @@ export function ScheduleView() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row gap-4 p-4 bg-card rounded-lg shadow">
-        <Input
-          type="text"
-          placeholder="Buscar clases o instructores..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="flex-grow"
-        />
+        <div className="relative flex-grow">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="Buscar clases o instructores..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10" // Add padding to the left for the icon
+          />
+        </div>
         <div className="flex flex-col sm:flex-row gap-4">
           <Select value={filterDay} onValueChange={setFilterDay}>
             <SelectTrigger className="w-full sm:w-[180px]">
