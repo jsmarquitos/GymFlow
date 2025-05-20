@@ -4,10 +4,10 @@
 import { useState, useEffect } from "react";
 import type { User, Routine, RoutineDay, RoutineExercise, MemberProfile } from "@/types";
 import { useAuth } from "@/hooks/useAuth";
-import { MOCK_ROUTINES, MOCK_ROUTINE_DAYS, MOCK_ROUTINE_EXERCISES, MOCK_MEMBER_PROFILE } from "@/lib/constants";
+import { MOCK_MEMBER_VIEW_ROUTINE, MOCK_MEMBER_PROFILE } from "@/lib/constants"; // Updated import
 import { RoutineDisplay } from "./RoutineDisplay";
-import { Loader2, Frown, Info } from "lucide-react"; // Added Info
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"; // Added Alert components
+import { Loader2, Frown, Info } from "lucide-react"; 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"; 
 
 export function MemberRoutineClient() {
   const { user, isLoading: authLoading } = useAuth();
@@ -18,12 +18,11 @@ export function MemberRoutineClient() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setIsLoading(true); // Start loading when auth state might change
+    setIsLoading(true); 
     if (!authLoading) {
-      if (user && user.email === MOCK_MEMBER_PROFILE.email) { // Simulate fetching profile for current user
+      if (user && user.email === MOCK_MEMBER_PROFILE.email) { 
         setMemberProfile(MOCK_MEMBER_PROFILE);
       } else if (user && user.role === 'member') {
-         // For other members, show no routine assigned for now.
         setMemberProfile({
           id: user.email || `member_${Date.now()}`,
           name: "Miembro Estándar",
@@ -35,33 +34,33 @@ export function MemberRoutineClient() {
           profilePictureHint: "persona avatar",
         });
       } else {
-        setMemberProfile(null); // Clear profile if not a member or no user
+        setMemberProfile(null); 
       }
-      // setIsLoading(false); // Moved to the next useEffect to ensure data is fetched based on profile
     }
   }, [user, authLoading]);
 
   useEffect(() => {
     if (memberProfile) {
-      // Simulate fetching routine assigned to this member
-      const assignedRoutine = MOCK_ROUTINES.find(r => r.assignedToMemberId === memberProfile.id);
-      if (assignedRoutine) {
+      // Use MOCK_MEMBER_VIEW_ROUTINE if the profile matches
+      if (memberProfile.id === MOCK_MEMBER_PROFILE.id && MOCK_MEMBER_VIEW_ROUTINE.assignedToMemberId === MOCK_MEMBER_PROFILE.id) {
+        const assignedRoutine = MOCK_MEMBER_VIEW_ROUTINE;
         setRoutine(assignedRoutine);
-        const days = MOCK_ROUTINE_DAYS.filter(day => day.routineId === assignedRoutine.id).sort((a,b) => a.order - b.order);
+        // Extract days and exercises from the nested structure
+        const days = assignedRoutine.days.sort((a,b) => a.order - b.order);
         setRoutineDays(days);
-        const exercises = MOCK_ROUTINE_EXERCISES.filter(ex => days.map(d => d.id).includes(ex.routineDayId));
+        const exercises = days.flatMap(day => day.exercises.map(ex => ({...ex, routineDayId: day.id }))).sort((a,b) => a.order - b.order); // Add routineDayId if needed by RoutineDisplay, sort by order
         setRoutineExercises(exercises);
       } else {
-        setRoutine(null); // No routine found for this member
+        setRoutine(null); // No routine found for this member or profile doesn't match
         setRoutineDays([]);
         setRoutineExercises([]);
       }
-    } else if (!authLoading && user && user.role === 'member'){ // User is a member but not MOCK_MEMBER_PROFILE
+    } else if (!authLoading && user && user.role === 'member'){ 
         setRoutine(null);
         setRoutineDays([]);
         setRoutineExercises([]);
     }
-     setIsLoading(false); // Stop loading after attempting to fetch/set routines
+     setIsLoading(false); 
   }, [memberProfile, authLoading, user]);
 
   if (authLoading || isLoading) {
@@ -73,7 +72,7 @@ export function MemberRoutineClient() {
     );
   }
 
-  if (!user || (user.role !== 'member' && user.role !== 'instructor')) { // Instructors might view their own routines in future
+  if (!user || (user.role !== 'member' && user.role !== 'instructor')) { 
     return (
         <Alert variant="destructive" className="max-w-md mx-auto">
           <Frown className="h-5 w-5" />
@@ -96,7 +95,6 @@ export function MemberRoutineClient() {
         </Alert>
     );
   }
-  // Instructors might see a different message or UI in the future. For now, if they land here and have no routine, it's fine.
   if (!routine && user.role === 'instructor') {
     return (
         <Alert className="max-w-lg mx-auto">
