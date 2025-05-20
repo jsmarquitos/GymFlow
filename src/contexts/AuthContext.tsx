@@ -7,7 +7,7 @@ import { createContext, useState, useEffect, type ReactNode, useCallback } from 
 
 interface AuthContextType {
   user: User | null;
-  login: (role: 'admin' | 'member') => void;
+  login: (role: 'admin' | 'member' | 'instructor') => void; // Added instructor
   logout: () => void;
   isLoading: boolean;
 }
@@ -33,12 +33,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  const login = useCallback((role: 'admin' | 'member') => {
+  const login = useCallback((role: 'admin' | 'member' | 'instructor') => {
     const newUser: User = { role };
     if (role === 'member') {
       newUser.email = 'miembro@gymflow.com'; // Email mock para miembro
     } else if (role === 'admin') {
       newUser.email = 'admin@gymflow.com'; // Email mock para admin
+    } else if (role === 'instructor') {
+      newUser.email = 'instructor@gymflow.com'; // Email mock para instructor
     }
     setUser(newUser);
     localStorage.setItem('currentUser', JSON.stringify(newUser));

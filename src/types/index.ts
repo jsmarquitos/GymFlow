@@ -40,6 +40,8 @@ export interface NavItemConfig {
   icon: LucideIcon;
   adminOnly?: boolean; // Para controlar visibilidad en el menú
   requiresAuth?: boolean; // Para mostrar solo si el usuario está autenticado
+  instructorOnly?: boolean; // Visible solo para instructores
+  memberOnly?: boolean; // Visible solo para miembros
 }
 
 // Tipos para el Panel de Administración
@@ -81,7 +83,7 @@ export interface PaymentRecord {
 
 // Tipo para el usuario autenticado
 export interface User {
-  role: 'admin' | 'member';
+  role: 'admin' | 'member' | 'instructor'; // Añadido instructor
   email?: string; // Añadido para poder enviar correos
 }
 
@@ -94,4 +96,36 @@ export interface GymSettings {
   instagramUrl?: string; // Optional
   facebookUrl?: string; // Optional
   twitterUrl?: string; // Optional
+}
+
+// Tipos para Rutinas de Entrenamiento
+export interface Routine {
+  id: string;
+  name: string;
+  assignedToMemberId: string; // ID del MemberProfile
+  assignedByInstructorName: string; // Nombre del instructor
+  startDate: string; // YYYY-MM-DD
+  endDate: string; // YYYY-MM-DD
+  notes?: string; // Notas generales de la rutina
+}
+
+export interface RoutineDay {
+  id: string;
+  routineId: string;
+  name: string; // Ej: "Día 1: Pecho y Tríceps", "Lunes: Piernas"
+  order: number; // Para ordenar los días
+  description?: string; // Descripción o enfoque del día
+}
+
+export interface RoutineExercise {
+  id: string;
+  routineDayId: string;
+  name: string;
+  sets: string; // Ej: "3-4"
+  reps: string; // Ej: "8-12"
+  weight?: string; // Ej: "50kg", "BW" (Bodyweight)
+  restPeriod?: string; // Ej: "60-90s"
+  notes?: string; // Notas específicas del ejercicio
+  isCompleted?: boolean; // Para el seguimiento del miembro
+  order: number; // Para ordenar los ejercicios dentro del día
 }

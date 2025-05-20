@@ -3,7 +3,7 @@
 
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
-import { ShieldCheck, User as UserIcon } from 'lucide-react'; // ShieldCheck for admin, User for member
+import { ShieldCheck, User as UserIcon, BrainCircuit } from 'lucide-react'; // ShieldCheck for admin, User for member, BrainCircuit for instructor
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -40,6 +40,14 @@ export function LoginClient() {
       >
         <ShieldCheck className="mr-2 h-5 w-5" />
         Ingresar como Administrador
+      </Button>
+       <Button 
+        onClick={() => login('instructor')} 
+        className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" // Different color for instructor
+        size="lg"
+      >
+        <BrainCircuit className="mr-2 h-5 w-5" />
+        Ingresar como Instructor
       </Button>
       <Button 
         onClick={() => login('member')} 

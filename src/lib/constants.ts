@@ -1,5 +1,5 @@
 
-import type { SubscriptionPlan, AdminMember, ClassSchedule, MemberBooking, PaymentRecord, PaymentMethod, PaymentStatus, GymSettings } from "@/types";
+import type { SubscriptionPlan, AdminMember, ClassSchedule, MemberBooking, PaymentRecord, PaymentMethod, PaymentStatus, GymSettings, MemberProfile, Routine, RoutineDay, RoutineExercise } from "@/types";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -73,10 +73,25 @@ export const MOCK_ADMIN_MEMBERS: AdminMember[] = [
   },
 ];
 
+// Este perfil se usará para el ejemplo de Mis Rutinas
+export const MOCK_MEMBER_PROFILE: MemberProfile = {
+  id: "user123_alex_ryder", // Un ID único para este miembro
+  name: "Alex Ryder",
+  email: "miembro@gymflow.com", // Correo asignado al "miembro" en AuthContext
+  membershipType: "Premium Oro",
+  joinDate: "15 de enero de 2023",
+  profilePictureUrl: "https://placehold.co/150x150.png",
+  profilePictureHint: "persona avatar",
+  bookings: [
+    { id: "b1", classId: "c1", className: "Flujo de Yoga Matutino", classDate: "10 de julio de 2024", classTime: "7:00 AM", status: "Asistida" },
+    { id: "b2", classId: "c2", className: "Explosión HIIT", classDate: "11 de julio de 2024", classTime: "6:00 PM", status: "Reservada" },
+  ],
+};
+
+
 export const formatDate = (dateString: string) => {
   try {
-    // Asegurarse de que la fecha se parsea correctamente, especialmente si solo es yyyy-MM-dd
-    const date = new Date(dateString + 'T00:00:00'); // Añadir hora para evitar problemas de zona horaria
+    const date = new Date(dateString + 'T00:00:00'); 
     return format(date, "dd 'de' MMMM 'de' yyyy", { locale: es });
   } catch (error) {
     console.warn(`Error formatting date: ${dateString}`, error);
@@ -247,3 +262,48 @@ export const MOCK_GYM_SETTINGS: GymSettings = {
   facebookUrl: "https://facebook.com/gymflow",
   twitterUrl: "https://twitter.com/gymflow",
 };
+
+// Mock data for Routines
+export const MOCK_ROUTINES: Routine[] = [
+  {
+    id: "routine_001",
+    name: "Rutina de Fuerza y Resistencia (Alex R.)",
+    assignedToMemberId: MOCK_MEMBER_PROFILE.id, // Asignada a Alex Ryder (miembro@gymflow.com)
+    assignedByInstructorName: "Entrenador IA",
+    startDate: "2024-08-01",
+    endDate: "2024-08-31",
+    notes: "Concéntrate en la técnica y aumenta progresivamente el peso. No olvides calentar antes y estirar después de cada sesión."
+  }
+];
+
+export const MOCK_ROUTINE_DAYS: RoutineDay[] = [
+  { id: "day_001", routineId: "routine_001", name: "Día 1: Empuje (Pecho, Hombros, Tríceps)", order: 1, description: "Enfócate en movimientos compuestos para la parte superior del cuerpo." },
+  { id: "day_002", routineId: "routine_001", name: "Día 2: Jalón (Espalda, Bíceps)", order: 2, description: "Trabaja la espalda en todos sus ángulos y complementa con bíceps." },
+  { id: "day_003", routineId: "routine_001", name: "Día 3: Pierna Completa", order: 3, description: "Un día dedicado a fortalecer todo el tren inferior." },
+  { id: "day_004", routineId: "routine_001", name: "Día 4: Descanso Activo o Cardio Ligero", order: 4, description: "Caminata, yoga suave o natación ligera." },
+  { id: "day_005", routineId: "routine_001", name: "Día 5: Full Body (Opcional)", order: 5, description: "Si te sientes con energía, una sesión de cuerpo completo con menos volumen." },
+];
+
+export const MOCK_ROUTINE_EXERCISES: RoutineExercise[] = [
+  // Día 1: Empuje
+  { id: "ex_001", routineDayId: "day_001", name: "Press de Banca Plano", sets: "3-4", reps: "6-10", weight: "Progresivo", restPeriod: "90s", order: 1 },
+  { id: "ex_002", routineDayId: "day_001", name: "Press Militar con Barra (de pie)", sets: "3", reps: "8-12", weight: "Progresivo", restPeriod: "75s", order: 2 },
+  { id: "ex_003", routineDayId: "day_001", name: "Fondos en Paralelas (o banco)", sets: "3", reps: "Al fallo", weight: "Corporal", restPeriod: "75s", order: 3 },
+  { id: "ex_004", routineDayId: "day_001", name: "Elevaciones Laterales con Mancuernas", sets: "3", reps: "12-15", weight: "Ligero-Moderado", restPeriod: "60s", order: 4 },
+  { id: "ex_005", routineDayId: "day_001", name: "Extensión de Tríceps en Polea Alta (con cuerda)", sets: "3", reps: "10-15", weight: "Moderado", restPeriod: "60s", order: 5 },
+
+  // Día 2: Jalón
+  { id: "ex_006", routineDayId: "day_002", name: "Dominadas (o Jalón al Pecho)", sets: "3-4", reps: "Al fallo / 8-12", weight: "Corporal / Progresivo", restPeriod: "90s", order: 1 },
+  { id: "ex_007", routineDayId: "day_002", name: "Remo con Barra", sets: "3", reps: "8-12", weight: "Progresivo", restPeriod: "75s", order: 2 },
+  { id: "ex_008", routineDayId: "day_002", name: "Face Pulls", sets: "3", reps: "15-20", weight: "Ligero", restPeriod: "60s", order: 3 },
+  { id: "ex_009", routineDayId: "day_002", name: "Curl de Bíceps con Barra", sets: "3", reps: "8-12", weight: "Progresivo", restPeriod: "75s", order: 4 },
+  { id: "ex_010", routineDayId: "day_002", name: "Curl Martillo con Mancuernas", sets: "3", reps: "10-15", weight: "Moderado", restPeriod: "60s", order: 5 },
+
+  // Día 3: Pierna
+  { id: "ex_011", routineDayId: "day_003", name: "Sentadilla Trasera con Barra", sets: "3-4", reps: "6-10", weight: "Progresivo", restPeriod: "120s", order: 1 },
+  { id: "ex_012", routineDayId: "day_003", name: "Peso Muerto Rumano con Mancuernas", sets: "3", reps: "10-15", weight: "Moderado", restPeriod: "90s", order: 2 },
+  { id: "ex_013", routineDayId: "day_003", name: "Prensa de Piernas", sets: "3", reps: "12-15", weight: "Progresivo", restPeriod: "75s", order: 3 },
+  { id: "ex_014", routineDayId: "day_003", name: "Extensiones de Cuádriceps", sets: "3", reps: "12-15", weight: "Moderado", restPeriod: "60s", order: 4 },
+  { id: "ex_015", routineDayId: "day_003", name: "Curl Femoral Tumbado", sets: "3", reps: "12-15", weight: "Moderado", restPeriod: "60s", order: 5 },
+  { id: "ex_016", routineDayId: "day_003", name: "Elevación de Gemelos (de pie)", sets: "4", reps: "15-20", weight: "Progresivo", restPeriod: "60s", order: 6 },
+];

@@ -2,31 +2,36 @@
 'use client';
 
 import Link from 'next/link';
-import { Shield, Users, LogIn, LogOut, Brain, Dumbbell, CalendarDays, Menu } from 'lucide-react';
+import { Shield, Users, LogIn, LogOut, Brain, Dumbbell, CalendarDays, Menu, ClipboardList } from 'lucide-react'; // Added ClipboardList
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import { useAuth } from '@/hooks/useAuth';
-import { useGymSettings } from '@/hooks/useGymSettings'; // Import useGymSettings
+import { useGymSettings } from '@/hooks/useGymSettings'; 
 import type { NavItemConfig } from '@/types';
 import { NavItem } from './NavItem';
-import { useState } from 'react';
+import { useState } from 'react'; 
 
 const allNavItems: NavItemConfig[] = [
   { href: "/schedule", label: "Horario", icon: CalendarDays },
-  { href: "/bookings", label: "Mis Reservas", icon: Dumbbell, requiresAuth: true },
+  { href: "/bookings", label: "Mis Reservas", icon: Dumbbell, requiresAuth: true, memberOnly: true },
+  { href: "/routines", label: "Mis Rutinas", icon: ClipboardList, requiresAuth: true, memberOnly: true }, // Added Mis Rutinas
   { href: "/workout-ai", label: "IA de Entrenamiento", icon: Brain, requiresAuth: true },
-  { href: "/profile", label: "Perfil", icon: Users, requiresAuth: true },
-  { href: "/admin/members", label: "Administración", icon: Shield, adminOnly: true, requiresAuth: true },
+  { href: "/profile", label: "Perfil", icon: Users, requiresAuth: true, memberOnly: true },
+  { href: "/admin/members", label: "Administración", icon: Shield, requiresAuth: true, adminOnly: true }, // adminOnly implies requiresAuth
 ];
 
 export function Header() {
   const { user, logout, isLoading: authIsLoading } = useAuth();
-  const { settings, isLoading: settingsIsLoading } = useGymSettings(); // Get settings from context
+  const { settings, isLoading: settingsIsLoading } = useGymSettings(); 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = allNavItems.filter(item => {
-    if (item.requiresAuth && !user) return false;
-    if (item.adminOnly && user?.role !== 'admin') return false;
+    if (!user && item.requiresAuth) return false; // Not logged in, hide auth-required items
+    if (user) {
+      if (item.adminOnly && user.role !== 'admin') return false; // Not admin, hide admin-only items
+      if (item.memberOnly && user.role !== 'member') return false; // Not member, hide member-only items
+      if (item.instructorOnly && user.role !== 'instructor') return false; // Not instructor, hide instructor-only
+    }
     return true;
   });
 
@@ -36,7 +41,7 @@ export function Header() {
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/" className="text-2xl font-bold text-primary hover:text-primary/90 transition-colors">
-          {gymName} {/* Use dynamic gym name */}
+          {gymName} 
         </Link>
         
         <nav className="hidden md:flex items-center space-x-1 lg:space-x-2">

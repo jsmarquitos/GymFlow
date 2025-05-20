@@ -3,11 +3,11 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Users, CreditCard, Activity, Loader2, Receipt, Settings } from "lucide-react";
+import { Users, CreditCard, Activity, Loader2, Receipt, Settings, ClipboardList } from "lucide-react"; // Added ClipboardList
 import { useAuth } from "@/hooks/useAuth";
-import { useRouter, usePathname } from "next/navigation"; // Added usePathname
+import { useRouter, usePathname } from "next/navigation"; 
 import { useEffect, useState } from "react";
-import { cn } from "@/lib/utils"; // Added cn
+import { cn } from "@/lib/utils"; 
 
 interface AdminNavItemProps {
   href: string;
@@ -20,6 +20,7 @@ const adminNavItems: AdminNavItemProps[] = [
   { href: "/admin/subscriptions", label: "Planes", icon: CreditCard },
   { href: "/admin/classes", label: "Clases", icon: Activity },
   { href: "/admin/payments", label: "Pagos", icon: Receipt },
+  { href: "/admin/routines-management", label: "Gestión de Rutinas", icon: ClipboardList }, // Placeholder for future
   { href: "/admin/settings", label: "Configuración", icon: Settings },
 ];
 
@@ -30,12 +31,13 @@ export default function AdminLayout({
 }) {
   const { user, isLoading: authIsLoading } = useAuth();
   const router = useRouter();
-  const pathname = usePathname(); // Get current pathname
+  const pathname = usePathname(); 
   const [isVerifying, setIsVerifying] = useState(true);
 
   useEffect(() => {
     if (!authIsLoading) {
-      if (!user || user.role !== 'admin') {
+      // Allow admin or instructor
+      if (!user || (user.role !== 'admin' && user.role !== 'instructor')) {
         router.replace('/'); 
       } else {
         setIsVerifying(false); 
@@ -63,13 +65,13 @@ export default function AdminLayout({
               <Button
                 key={item.href}
                 asChild
-                variant="ghost" // Base variant is ghost
+                variant="ghost" 
                 size="sm"
                 className={cn(
                   "flex items-center space-x-2 rounded-md px-3 py-2 transition-colors",
                   isActive 
-                    ? "bg-accent text-accent-foreground hover:bg-accent/90" // Active style using accent color
-                    : "text-foreground hover:bg-accent/10 hover:text-accent-foreground" // Subtle hover for non-active
+                    ? "bg-accent text-accent-foreground hover:bg-accent/90" 
+                    : "text-foreground hover:bg-accent/10 hover:text-accent-foreground" 
                 )}
               >
                 <Link href={item.href}>
