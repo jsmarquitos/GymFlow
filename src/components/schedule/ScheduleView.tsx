@@ -38,17 +38,24 @@ export function ScheduleView() {
   }, [classesFromContext, isLoadingContext]);
 
   const handleClassBooked = (classId: string) => {
-    setDisplayClasses(prevClasses =>
-      prevClasses.map(cls => {
-        if (cls.id === classId && cls.availableSlots > 0) {
-          const newSlots = cls.availableSlots - 1;
-          // Update context as well so this change persists if user navigates away and back
-          updateClassSlots(classId, newSlots); 
-          return { ...cls, availableSlots: newSlots };
-        }
-        return cls;
-      })
-    );
+    // Find the class in the current local displayClasses to ensure it's bookable
+    const classToBookLocally = displayClasses.find(c => c.id === classId);
+
+    if (classToBookLocally && classToBookLocally.availableSlots > 0) {
+      const newLocalAvailableSlots = classToBookLocally.availableSlots - 1;
+
+      // Update the local state for immediate UI feedback
+      setDisplayClasses(prevDisplayClasses =>
+        prevDisplayClasses.map(cls =>
+          cls.id === classId
+            ? { ...cls, availableSlots: newLocalAvailableSlots }
+            : cls
+        )
+      );
+
+      // Then, update the context state for persistence and global consistency
+      updateClassSlots(classId, newLocalAvailableSlots);
+    }
     // The toast for booking is handled in ClassCard
   };
 
