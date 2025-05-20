@@ -89,7 +89,7 @@ export function PaymentFormDialog({ isOpen, onOpenChange, paymentItem, members, 
         form.reset(initialDefaultValues);
       }
     }
-  }, [paymentItem, isOpen, form.reset, initialDefaultValues]);
+  }, [paymentItem, isOpen, form, initialDefaultValues]); // form.reset changed to form
 
   const handleSubmit: SubmitHandler<PaymentFormValues> = (data) => {
     const submissionData = {
@@ -102,7 +102,6 @@ export function PaymentFormDialog({ isOpen, onOpenChange, paymentItem, members, 
     if (paymentItem) {
       onSubmit({ ...paymentItem, ...submissionData });
     } else {
-      // const { id, memberName, ...rest } = paymentItem || {}; // This line seems to have a typo, paymentItem might be null here.
       onSubmit(submissionData as Omit<PaymentRecord, 'id' | 'memberName'>);
     }
     onOpenChange(false);
@@ -123,7 +122,7 @@ export function PaymentFormDialog({ isOpen, onOpenChange, paymentItem, members, 
               control={form.control}
               name="memberId"
               render={({ field }) => (
-                <FormItem className="flex flex-col">
+                <FormItem> {/* Removed flex flex-col */}
                   <FormLabel>Miembro</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
@@ -152,9 +151,9 @@ export function PaymentFormDialog({ isOpen, onOpenChange, paymentItem, members, 
                         <CommandGroup>
                           {members.map((member) => (
                             <CommandItem
-                              value={member.id} // Use member.id as the value for onSelect
+                              value={member.id} 
                               key={member.id}
-                              onSelect={(currentValue) => { // currentValue is member.id
+                              onSelect={(currentValue) => { 
                                 field.onChange(currentValue);
                               }}
                             >
@@ -183,7 +182,7 @@ export function PaymentFormDialog({ isOpen, onOpenChange, paymentItem, members, 
                 control={form.control}
                 name="paymentDate"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col">
+                  <FormItem> {/* Removed flex flex-col */}
                     <FormLabel>Fecha de Pago</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -285,7 +284,7 @@ export function PaymentFormDialog({ isOpen, onOpenChange, paymentItem, members, 
                   control={form.control}
                   name="coveredPeriodStart"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col">
+                    <FormItem> {/* Removed flex flex-col */}
                       <FormLabel>Fecha de Inicio</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
@@ -308,7 +307,7 @@ export function PaymentFormDialog({ isOpen, onOpenChange, paymentItem, members, 
                   control={form.control}
                   name="coveredPeriodEnd"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col">
+                    <FormItem> {/* Removed flex flex-col */}
                       <FormLabel>Fecha de Fin</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
@@ -356,5 +355,7 @@ export function PaymentFormDialog({ isOpen, onOpenChange, paymentItem, members, 
     </Dialog>
   );
 }
+
+    
 
     
