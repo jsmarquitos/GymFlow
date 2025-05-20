@@ -83,8 +83,8 @@ export const MOCK_MEMBER_PROFILE: MemberProfile = {
   profilePictureUrl: "https://placehold.co/150x150.png",
   profilePictureHint: "persona avatar",
   bookings: [
-    { id: "b1", classId: "c1", className: "Flujo de Yoga Matutino", classDate: "10 de julio de 2024", classTime: "7:00 AM", status: "Asistida" },
-    { id: "b2", classId: "c2", className: "Explosión HIIT", classDate: "11 de julio de 2024", classTime: "6:00 PM", status: "Reservada" },
+    { id: "b1", classId: "1", className: "Flujo de Yoga Matutino", classDate: "10 de julio de 2024", classTime: "7:00 AM", status: "Asistida" },
+    { id: "b2", classId: "2", className: "Explosión HIIT", classDate: "11 de julio de 2024", classTime: "6:00 PM", status: "Reservada" },
   ],
 };
 
@@ -286,24 +286,24 @@ export const MOCK_ROUTINE_DAYS: RoutineDay[] = [
 
 export const MOCK_ROUTINE_EXERCISES: RoutineExercise[] = [
   // Día 1: Empuje
-  { id: "ex_001", routineDayId: "day_001", name: "Press de Banca Plano", sets: "3-4", reps: "6-10", weight: "Progresivo", restPeriod: "90s", order: 1 },
-  { id: "ex_002", routineDayId: "day_001", name: "Press Militar con Barra (de pie)", sets: "3", reps: "8-12", weight: "Progresivo", restPeriod: "75s", order: 2 },
-  { id: "ex_003", routineDayId: "day_001", name: "Fondos en Paralelas (o banco)", sets: "3", reps: "Al fallo", weight: "Corporal", restPeriod: "75s", order: 3 },
-  { id: "ex_004", routineDayId: "day_001", name: "Elevaciones Laterales con Mancuernas", sets: "3", reps: "12-15", weight: "Ligero-Moderado", restPeriod: "60s", order: 4 },
-  { id: "ex_005", routineDayId: "day_001", name: "Extensión de Tríceps en Polea Alta (con cuerda)", sets: "3", reps: "10-15", weight: "Moderado", restPeriod: "60s", order: 5 },
+  { id: "ex_001", routineDayId: "day_001", name: "Press de Banca Plano", sets: "3-4", reps: "6-10", weight: "Progresivo", restPeriod: "90s", order: 1, isCompleted: false },
+  { id: "ex_002", routineDayId: "day_001", name: "Press Militar con Barra (de pie)", sets: "3", reps: "8-12", weight: "Progresivo", restPeriod: "75s", order: 2, isCompleted: false },
+  { id: "ex_003", routineDayId: "day_001", name: "Fondos en Paralelas (o banco)", sets: "3", reps: "Al fallo", weight: "Corporal", restPeriod: "75s", order: 3, isCompleted: false },
+  { id: "ex_004", routineDayId: "day_001", name: "Elevaciones Laterales con Mancuernas", sets: "3", reps: "12-15", weight: "Ligero-Moderado", restPeriod: "60s", order: 4, isCompleted: false },
+  { id: "ex_005", routineDayId: "day_001", name: "Extensión de Tríceps en Polea Alta (con cuerda)", sets: "3", reps: "10-15", weight: "Moderado", restPeriod: "60s", order: 5, isCompleted: false },
 
   // Día 2: Jalón
-  { id: "ex_006", routineDayId: "day_002", name: "Dominadas (o Jalón al Pecho)", sets: "3-4", reps: "Al fallo / 8-12", weight: "Corporal / Progresivo", restPeriod: "90s", order: 1 },
-  { id: "ex_007", routineDayId: "day_002", name: "Remo con Barra", sets: "3", reps: "8-12", weight: "Progresivo", restPeriod: "75s", order: 2 },
-  { id: "ex_008", routineDayId: "day_002", name: "Face Pulls", sets: "3", reps: "15-20", weight: "Ligero", restPeriod: "60s", order: 3 },
-  { id: "ex_009", routineDayId: "day_002", name: "Curl de Bíceps con Barra", sets: "3", reps: "8-12", weight: "Progresivo", restPeriod: "75s", order: 4 },
-  { id: "ex_010", routineDayId: "day_002", name: "Curl Martillo con Mancuernas", sets: "3", reps: "10-15", weight: "Moderado", restPeriod: "60s", order: 5 },
+  { id: "ex_006", routineDayId: "day_002", name: "Dominadas (o Jalón al Pecho)", sets: "3-4", reps: "Al fallo / 8-12", weight: "Corporal / Progresivo", restPeriod: "90s", order: 1, isCompleted: false },
+  { id: "ex_007", routineDayId: "day_002", name: "Remo con Barra", sets: "3", reps: "8-12", weight: "Progresivo", restPeriod: "75s", order: 2, isCompleted: false },
+  { id: "ex_008", routineDayId: "day_002", name: "Face Pulls", sets: "3", reps: "15-20", weight: "Ligero", restPeriod: "60s", order: 3, isCompleted: false },
+  { id: "ex_009", routineDayId: "day_002", name: "Curl de Bíceps con Barra", sets: "3", reps: "8-12", weight: "Progresivo", restPeriod: "75s", order: 4, isCompleted: false },
+  { id: "ex_010", routineDayId: "day_002", name: "Curl Martillo con Mancuernas", sets: "3", reps: "10-15", weight: "Moderado", restPeriod: "60s", order: 5, isCompleted: false },
 
   // Día 3: Pierna
-  { id: "ex_011", routineDayId: "day_003", name: "Sentadilla Trasera con Barra", sets: "3-4", reps: "6-10", weight: "Progresivo", restPeriod: "120s", order: 1 },
-  { id: "ex_012", routineDayId: "day_003", name: "Peso Muerto Rumano con Mancuernas", sets: "3", reps: "10-15", weight: "Moderado", restPeriod: "90s", order: 2 },
-  { id: "ex_013", routineDayId: "day_003", name: "Prensa de Piernas", sets: "3", reps: "12-15", weight: "Progresivo", restPeriod: "75s", order: 3 },
-  { id: "ex_014", routineDayId: "day_003", name: "Extensiones de Cuádriceps", sets: "3", reps: "12-15", weight: "Moderado", restPeriod: "60s", order: 4 },
-  { id: "ex_015", routineDayId: "day_003", name: "Curl Femoral Tumbado", sets: "3", reps: "12-15", weight: "Moderado", restPeriod: "60s", order: 5 },
-  { id: "ex_016", routineDayId: "day_003", name: "Elevación de Gemelos (de pie)", sets: "4", reps: "15-20", weight: "Progresivo", restPeriod: "60s", order: 6 },
+  { id: "ex_011", routineDayId: "day_003", name: "Sentadilla Trasera con Barra", sets: "3-4", reps: "6-10", weight: "Progresivo", restPeriod: "120s", order: 1, isCompleted: false },
+  { id: "ex_012", routineDayId: "day_003", name: "Peso Muerto Rumano con Mancuernas", sets: "3", reps: "10-15", weight: "Moderado", restPeriod: "90s", order: 2, isCompleted: false },
+  { id: "ex_013", routineDayId: "day_003", name: "Prensa de Piernas", sets: "3", reps: "12-15", weight: "Progresivo", restPeriod: "75s", order: 3, isCompleted: false },
+  { id: "ex_014", routineDayId: "day_003", name: "Extensiones de Cuádriceps", sets: "3", reps: "12-15", weight: "Moderado", restPeriod: "60s", order: 4, isCompleted: false },
+  { id: "ex_015", routineDayId: "day_003", name: "Curl Femoral Tumbado", sets: "3", reps: "12-15", weight: "Moderado", restPeriod: "60s", order: 5, isCompleted: false },
+  { id: "ex_016", routineDayId: "day_003", name: "Elevación de Gemelos (de pie)", sets: "4", reps: "15-20", weight: "Progresivo", restPeriod: "60s", order: 6, isCompleted: false },
 ];

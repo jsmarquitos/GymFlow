@@ -28,7 +28,7 @@ export function Header() {
   const navItems = allNavItems.filter(item => {
     if (!user && item.requiresAuth) return false; // Not logged in, hide auth-required items
     if (user) {
-      if (item.adminOnly && user.role !== 'admin') return false; // Not admin, hide admin-only items
+      if (item.adminOnly && user.role !== 'admin' && user.role !== 'instructor') return false; // Not admin/instructor, hide admin-only items (allowing instructor access too)
       if (item.memberOnly && user.role !== 'member') return false; // Not member, hide member-only items
       if (item.instructorOnly && user.role !== 'instructor') return false; // Not instructor, hide instructor-only
     }

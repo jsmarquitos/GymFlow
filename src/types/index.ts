@@ -102,7 +102,7 @@ export interface GymSettings {
 export interface Routine {
   id: string;
   name: string;
-  assignedToMemberId: string; // ID del MemberProfile
+  assignedToMemberId: string; // ID del MemberProfile o AdminMember
   assignedByInstructorName: string; // Nombre del instructor
   startDate: string; // YYYY-MM-DD
   endDate: string; // YYYY-MM-DD
