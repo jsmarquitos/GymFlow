@@ -22,6 +22,7 @@ import { es } from "date-fns/locale";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card } from "@/components/ui/card"; // Added this import
 
 const exerciseSchema = z.object({
   id: z.string().default(() => uuidv4()),
@@ -464,3 +465,5 @@ function RoutineDayFieldArray({ form, dayIndex, removeDay }: RoutineDayFieldArra
     </Card>
   );
 }
+
+    
