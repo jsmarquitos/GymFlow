@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Shield, Users, LogIn, LogOut, Brain, Dumbbell, CalendarDays, Menu, ClipboardList } from 'lucide-react';
+import { Shield, Users, LogIn, LogOut, Brain, Dumbbell, CalendarDays, Menu, ClipboardList, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import { useAuth } from '@/hooks/useAuth';
@@ -18,6 +18,8 @@ const allNavItems: NavItemConfig[] = [
   { href: "/workout-ai", label: "IA de Entrenamiento", icon: Brain, requiresAuth: true },
   { href: "/profile", label: "Perfil", icon: Users, requiresAuth: true, memberOnly: true },
   { href: "/admin/members", label: "Administración", icon: Shield, requiresAuth: true, adminOnly: true },
+  { href: "/login", label: "Iniciar Sesión", icon: LogIn, hideWhenLoggedIn: true },
+  { href: "/register", label: "Registrarse", icon: UserPlus, hideWhenLoggedIn: true },
 ];
 
 export function Header() {
@@ -26,6 +28,7 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = allNavItems.filter(item => {
+    if (item.hideWhenLoggedIn && user) return false; // Ocultar si está logueado y el item lo indica
     if (!user && item.requiresAuth) return false;
     if (user) {
       if (item.adminOnly && user.role !== 'admin' && user.role !== 'instructor') return false;
@@ -54,19 +57,11 @@ export function Header() {
           </nav>
 
           <ThemeToggle />
-          {!authIsLoading && (
-            user ? (
-              <Button variant="ghost" size="icon" onClick={logout} title="Cerrar Sesión">
-                <LogOut className="h-5 w-5 text-destructive" />
-                <span className="sr-only">Cerrar Sesión</span>
-              </Button>
-            ) : (
-              <Button variant="default" size="sm" asChild>
-                <Link href="/login">
-                  <LogIn className="mr-1 h-5 w-5" /> Iniciar Sesión
-                </Link>
-              </Button>
-            )
+          {!authIsLoading && user && (
+            <Button variant="ghost" size="icon" onClick={logout} title="Cerrar Sesión">
+              <LogOut className="h-5 w-5 text-destructive" />
+              <span className="sr-only">Cerrar Sesión</span>
+            </Button>
           )}
         </div>
         
@@ -91,19 +86,11 @@ export function Header() {
             {navItems.map((item) => (
               <NavItem key={item.href} {...item} onClick={() => setMobileMenuOpen(false)} />
             ))}
-            <div className="border-t pt-2 mt-2"> {/* This div might look odd if items are reversed, consider its placement or removing it if nav is reversed */}
-              {!authIsLoading && (
-                user ? (
-                  <Button variant="ghost" onClick={() => { logout(); setMobileMenuOpen(false); }} className="w-full justify-start text-destructive">
-                    <LogOut className="mr-2 h-5 w-5" /> Cerrar Sesión
-                  </Button>
-                ) : (
-                  <Button variant="default" asChild className="w-full justify-start" onClick={() => setMobileMenuOpen(false)}>
-                    <Link href="/login">
-                      <LogIn className="mr-2 h-5 w-5" /> Iniciar Sesión
-                    </Link>
-                  </Button>
-                )
+            <div className="border-t pt-2 mt-2">
+              {!authIsLoading && user && (
+                <Button variant="ghost" onClick={() => { logout(); setMobileMenuOpen(false); }} className="w-full justify-start text-destructive">
+                  <LogOut className="mr-2 h-5 w-5" /> Cerrar Sesión
+                </Button>
               )}
             </div>
           </nav>

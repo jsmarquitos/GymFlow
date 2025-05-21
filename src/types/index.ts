@@ -44,6 +44,7 @@ export interface NavItemConfig {
   instructorOnly?: boolean;
   memberOnly?: boolean;
   instructorAllowed?: boolean;
+  hideWhenLoggedIn?: boolean; // Para ocultar "Login", "Registro" cuando ya está logueado
 }
 
 // Tipos para el Panel de Administración
@@ -85,8 +86,10 @@ export interface PaymentRecord {
 
 // Tipo para el usuario autenticado
 export interface User {
+  id: string; // ID único para cada usuario
+  name?: string; // Nombre del usuario, especialmente para miembros registrados
   role: 'admin' | 'member' | 'instructor';
-  email?: string;
+  email: string; // Email siempre será requerido
 }
 
 // Tipo para la configuración general del gimnasio
