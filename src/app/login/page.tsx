@@ -1,5 +1,6 @@
 
 import { LoginForm } from '@/components/auth/LoginForm'; // Cambiado a LoginForm
+import { LoginClient } from '@/components/auth/LoginClient'; // Importación añadida
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
 
