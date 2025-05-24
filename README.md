@@ -129,3 +129,117 @@ Thorough testing is crucial to ensure the reliability and security of the API. T
 4.  **Clean Up:** After tests, clean up any created data or reset the database to a known state.
 
 This testing strategy should provide good coverage for the API's functionality and robustness.
+
+## Deployment with Apache as a Reverse Proxy
+
+While Next.js applications are typically run with a Node.js server, you can use Apache as a reverse proxy in front of the Node.js server. This setup can be useful for integrating with an existing Apache server, managing SSL certificates, or load balancing.
+
+Here's a general guide:
+
+**1. Build Your Next.js Application:**
+   Create a production build of your Next.js app:
+   ```bash
+   npm run build
+   ```
+
+**2. Run the Next.js Production Server:**
+   Start the Next.js production server (usually on port 3000 by default):
+   ```bash
+   npm run start
+   ```
+   For production, you'll want to use a process manager (see step 4).
+
+**3. Configure Apache as a Reverse Proxy:**
+
+   *   **Enable Apache Modules:**
+      Ensure `mod_proxy` and `mod_proxy_http` are enabled. On Debian/Ubuntu:
+      ```bash
+      sudo a2enmod proxy proxy_http
+      sudo systemctl restart apache2
+      ```
+      If you plan to use WebSockets (e.g., for live updates in your app), also enable `mod_proxy_wstunnel`:
+      ```bash
+      sudo a2enmod proxy_wstunnel
+      sudo systemctl restart apache2
+      ```
+
+   *   **Create/Edit Apache Virtual Host Configuration:**
+      Create or modify an Apache Virtual Host configuration file (e.g., `/etc/apache2/sites-available/your-app.conf`):
+
+      ```apache
+      <VirtualHost *:80>
+          ServerName yourdomain.com # Replace with your actual domain or server IP
+
+          # Optional: Basic SSL Configuration (refer to Certbot/Let's Encrypt for free certificates)
+          # SSLEngine on
+          # SSLCertificateFile /etc/letsencrypt/live/yourdomain.com/fullchain.pem
+          # SSLCertificateKeyFile /etc/letsencrypt/live/yourdomain.com/privkey.pem
+          # Include /etc/letsencrypt/options-ssl-apache.conf # Recommended SSL options
+
+          ProxyPreserveHost On
+          ProxyRequests Off # Crucial for security
+
+          # Proxy HTTP requests to the Next.js app
+          ProxyPass / http://localhost:3000/
+          ProxyPassReverse / http://localhost:3000/
+
+          # Proxy WebSocket requests (if your app uses them)
+          # Ensure this comes *before* the general ProxyPass for HTTP if they share a path
+          # For example, if WebSockets are on /socket.io/
+          # ProxyPass /socket.io/ ws://localhost:3000/socket.io/
+          # ProxyPassReverse /socket.io/ ws://localhost:3000/socket.io/
+          # Or for a general WebSocket proxy on the root (less common for Next.js unless specific setup):
+          # RewriteEngine on
+          # RewriteCond %{HTTP:Upgrade} websocket [NC]
+          # RewriteCond %{HTTP:Connection} upgrade [NC]
+          # RewriteRule ^/?(.*) "ws://localhost:3000/$1" [P,L]
+
+
+          ErrorLog ${APACHE_LOG_DIR}/your-app-error.log
+          CustomLog ${APACHE_LOG_DIR}/your-app-access.log combined
+      </VirtualHost>
+      ```
+      *   Replace `yourdomain.com` and `localhost:3000` (if your Next.js app runs on a different port) as needed.
+      *   For HTTPS, you'll need to configure SSL certificates (Let's Encrypt with Certbot is a common free option). The example above includes commented-out SSL lines.
+
+   *   **Enable the Site and Reload Apache:**
+      ```bash
+      sudo a2ensite your-app.conf
+      sudo systemctl reload apache2 # Or restart if reload doesn't apply changes
+      ```
+
+**4. Use a Process Manager for the Next.js App:**
+   For production, do not just run `npm run start` directly in your terminal. Use a process manager like `pm2` to keep your Next.js application running reliably.
+
+   *   **Install `pm2` (if not already installed):**
+      ```bash
+      sudo npm install -g pm2
+      ```
+   *   **Start your Next.js app with `pm2`:**
+      Navigate to your Next.js project directory:
+      ```bash
+      cd /path/to/your/nextjs-app
+      pm2 start npm --name "my-nextjs-app" -- run start -- --port 3000 # Example with port
+      ```
+      (The `-- --port 3000` passes the port argument to `npm run start`)
+   *   **Ensure `pm2` restarts on server reboot:**
+      ```bash
+      pm2 startup
+      ```
+      (This command will output another command you need to run with sudo privileges)
+   *   **Save current `pm2` process list:**
+      ```bash
+      pm2 save
+      ```
+
+**5. Environment Variables for Next.js:**
+   Ensure your Next.js application (when started by `pm2` or your chosen method) has access to all required environment variables (`DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `NEXTAUTH_URL`, `NEXTAUTH_SECRET`, etc.).
+   *   For `pm2`, you can manage environment variables using an ecosystem file or by passing them when starting the app.
+   *   The `NEXTAUTH_URL` should be set to your public domain (e.g., `https://yourdomain.com`).
+
+**Important Considerations:**
+*   **Static Assets:** Next.js typically serves its own static assets effectively. While Apache can be configured to serve them directly from `_next/static` for potential performance gains, this adds complexity and is often not necessary.
+*   **Firewall:** Ensure your server's firewall allows traffic on port 80 (HTTP) and/or 443 (HTTPS).
+*   **Logging:** Regularly check both Apache logs and your Next.js application logs (managed by `pm2`) for any issues.
+
+This guide provides a starting point. Specific configurations may vary based on your server OS, Apache version, and application needs.
