@@ -1,34 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/db';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import { getToken } from 'next-auth/jwt'; // Added
 import { v4 as uuidv4 } from 'uuid';
-import { RowDataPacket, OkPacket, ResultSetHeader } from 'mysql2';
+import { RowDataPacket, OkPacket, ResultSetHeader } from 'mysql2/promise'; // Used /promise
 
-interface UserFromToken extends JwtPayload {
-  userId: string;
-  role: string;
-  email: string;
-}
+const NEXTAUTH_SECRET = process.env.NEXTAUTH_SECRET; // Added
 
 // Interface for ClassSchedule based on the schema
+// This interface is also used for the response of GET and POST
 interface ClassSchedule {
   id: string;
   class_name: string;
   description?: string | null;
   instructor_user_id: string;
-  instructor_name?: string; // Added for GET response
-  start_time: string; // Should be ISO 8601 format
-  end_time: string;   // Should be ISO 8601 format
+  instructor_name: string; // For GET response, ensure this is always populated
+  start_time: string; // ISO 8601 format
+  end_time: string;   // ISO 8601 format
   location?: string | null;
   max_capacity: number;
   current_capacity: number;
   difficulty_level?: string | null;
   equipment_needed?: string | null;
-  created_at?: string;
-  updated_at?: string;
+  created_at: string; // ISO 8601 format
+  updated_at: string; // ISO 8601 format
 }
 
-// Interface for POST request body, omitting generated fields like id, current_capacity
+// Interface for POST request body, omitting generated fields like id, current_capacity, instructor_name
 interface ClassScheduleInput {
   class_name: string;
   description?: string;
@@ -41,82 +38,26 @@ interface ClassScheduleInput {
   equipment_needed?: string;
 }
 
-// Helper function to verify JWT and get user details (simplified for direct use)
-async function authenticateAndAuthorize(
-  req: NextRequest,
-  allowedRoles?: string[]
-): Promise<{ user?: UserFromToken; errorResponse?: NextResponse }> {
-  const authHeader = req.headers.get('Authorization');
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return {
-      errorResponse: NextResponse.json(
-        { message: 'Authorization header missing or malformed.' },
-        { status: 401 }
-      ),
-    };
-  }
-  const token = authHeader.split(' ')[1];
-
-  const jwtSecret = process.env.JWT_SECRET;
-  if (!jwtSecret) {
-    console.error('JWT_SECRET is not defined.');
-    return {
-      errorResponse: NextResponse.json(
-        { message: 'Server configuration error.' },
-        { status: 500 }
-      ),
-    };
-  }
-
-  try {
-    const decoded = jwt.verify(token, jwtSecret) as UserFromToken;
-    if (!decoded || !decoded.userId || !decoded.role) {
-      return {
-        errorResponse: NextResponse.json(
-          { message: 'Invalid token payload.' },
-          { status: 401 }
-        ),
-      };
-    }
-
-    if (allowedRoles && allowedRoles.length > 0 && !allowedRoles.includes(decoded.role)) {
-      return {
-        errorResponse: NextResponse.json(
-          { message: 'Forbidden: You do not have permission to perform this action.' },
-          { status: 403 }
-        ),
-      };
-    }
-    return { user: decoded };
-  } catch (error) {
-    if (error instanceof jwt.JsonWebTokenError) {
-      return {
-        errorResponse: NextResponse.json({ message: `Invalid token: ${error.message}` }, { status: 401 }),
-      };
-    }
-    if (error instanceof jwt.TokenExpiredError) {
-      return { errorResponse: NextResponse.json({ message: 'Token expired.' }, { status: 401 }) };
-    }
-    console.error('Token verification error:', error);
-    return {
-      errorResponse: NextResponse.json({ message: 'Failed to verify token.' }, { status: 500 }),
-    };
-  }
-}
-
+// Helper to format timestamp fields consistently
+const formatTimestamp = (ts: any): string => {
+    if (ts instanceof Date) return ts.toISOString();
+    if (typeof ts === 'string') return ts; // Assume already correct format or let it pass
+    if (ts === null || ts === undefined) return ts;
+    return String(ts);
+};
 
 // GET /api/classes - Fetch all class schedules
 export async function GET(req: NextRequest) {
-  const authResult = await authenticateAndAuthorize(req); // All authenticated users can view
-  if (authResult.errorResponse) {
-    return authResult.errorResponse;
+  const token = await getToken({ req, secret: NEXTAUTH_SECRET });
+  if (!token) {
+    return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
   }
-  // If authResult.user is undefined here, it means no specific roles were required, just a valid token.
-  // Which is fine for this GET request.
+  // All authenticated users can view, so no role check needed here.
 
   let connection;
   try {
     connection = await pool.getConnection();
+    // Ensure RowDataPacket from mysql2/promise is used if execute returns it
     const query = `
       SELECT 
         cs.id, 
@@ -137,10 +78,29 @@ export async function GET(req: NextRequest) {
       JOIN Users u ON cs.instructor_user_id = u.id
       ORDER BY cs.start_time ASC;
     `;
-    const [rows] = (await connection.execute(query)) as RowDataPacket[][];
-    return NextResponse.json(rows as ClassSchedule[], { status: 200 });
+    const [rows] = await connection.execute<RowDataPacket[]>(query);
+    
+    const schedules: ClassSchedule[] = rows.map(row => ({
+      id: row.id,
+      class_name: row.class_name,
+      description: row.description,
+      instructor_user_id: row.instructor_user_id,
+      instructor_name: row.instructor_name,
+      start_time: formatTimestamp(row.start_time),
+      end_time: formatTimestamp(row.end_time),
+      location: row.location,
+      max_capacity: Number(row.max_capacity),
+      current_capacity: Number(row.current_capacity),
+      difficulty_level: row.difficulty_level,
+      equipment_needed: row.equipment_needed,
+      created_at: formatTimestamp(row.created_at),
+      updated_at: formatTimestamp(row.updated_at),
+    }));
+
+    return NextResponse.json(schedules, { status: 200 });
   } catch (error) {
     console.error('Error fetching class schedules:', error);
+    // Ensure OkPacket and ResultSetHeader are imported from 'mysql2/promise' if used elsewhere
     return NextResponse.json(
       { message: 'Failed to fetch class schedules.' },
       { status: 500 }
@@ -154,12 +114,12 @@ export async function GET(req: NextRequest) {
 
 // POST /api/classes - Create a new class schedule
 export async function POST(req: NextRequest) {
-  const authResult = await authenticateAndAuthorize(req, ['admin']); // Only admin can create
-  if (authResult.errorResponse) {
-    return authResult.errorResponse;
+  const token = await getToken({ req, secret: NEXTAUTH_SECRET });
+  if (!token) {
+    return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
   }
-  if (!authResult.user) { // Should be handled by errorResponse, but for type safety
-      return NextResponse.json({ message: 'Authentication failed.' }, { status: 401 });
+  if (token.role !== 'admin') {
+    return NextResponse.json({ message: 'Forbidden: You do not have permission to perform this action.' }, { status: 403 });
   }
 
   let connection;
@@ -221,9 +181,14 @@ export async function POST(req: NextRequest) {
     }
 
     const newClassId = uuidv4();
-    const current_capacity = max_capacity; // Set available slots to total slots
+    // current_capacity should be initialized based on how bookings are handled.
+    // If new classes start empty, it's 0. If max_capacity means available spots, it's max_capacity.
+    // The schema implies current_capacity is "Number of currently booked members", so for a new class it's 0.
+    const initial_current_capacity = 0;
 
-    const newClassSchedule: Omit<ClassSchedule, 'instructor_name' | 'created_at' | 'updated_at'> = {
+
+    // The object for insertion does not need instructor_name, created_at, updated_at
+    const newClassScheduleData = {
       id: newClassId,
       class_name,
       description: description || null,
@@ -232,7 +197,7 @@ export async function POST(req: NextRequest) {
       end_time,
       location: location || null,
       max_capacity,
-      current_capacity,
+      current_capacity: initial_current_capacity, // Use initialized value
       difficulty_level: difficulty_level || null,
       equipment_needed: equipment_needed || null,
     };
@@ -245,35 +210,61 @@ export async function POST(req: NextRequest) {
     `;
     
     await connection.execute(insertQuery, [
-      newClassSchedule.id,
-      newClassSchedule.class_name,
-      newClassSchedule.description,
-      newClassSchedule.instructor_user_id,
-      newClassSchedule.start_time,
-      newClassSchedule.end_time,
-      newClassSchedule.location,
-      newClassSchedule.max_capacity,
-      newClassSchedule.current_capacity,
-      newClassSchedule.difficulty_level,
-      newClassSchedule.equipment_needed,
+      newClassScheduleData.id,
+      newClassScheduleData.class_name,
+      newClassScheduleData.description,
+      newClassScheduleData.instructor_user_id,
+      newClassScheduleData.start_time,
+      newClassScheduleData.end_time,
+      newClassScheduleData.location,
+      newClassScheduleData.max_capacity,
+      newClassScheduleData.current_capacity,
+      newClassScheduleData.difficulty_level,
+      newClassScheduleData.equipment_needed,
     ]);
 
     await connection.commit();
 
-    // Fetch the newly created class with instructor name for the response
-    const [createdClassRows] = (await connection.execute(
-        `SELECT cs.*, CONCAT(u.first_name, ' ', u.last_name) AS instructor_name 
+    // Fetch the newly created class with instructor name and all fields for the response
+    const [createdClassRows] = await connection.execute<RowDataPacket[]>(
+        `SELECT cs.id, cs.class_name, cs.description, cs.instructor_user_id,
+                CONCAT(u.first_name, ' ', u.last_name) AS instructor_name,
+                cs.start_time, cs.end_time, cs.location, cs.max_capacity,
+                cs.current_capacity, cs.difficulty_level, cs.equipment_needed,
+                cs.created_at, cs.updated_at
          FROM ClassSchedules cs 
          JOIN Users u ON cs.instructor_user_id = u.id 
          WHERE cs.id = ?`,
         [newClassId]
-    )) as RowDataPacket[][];
+    );
+    
+    if (createdClassRows.length === 0) {
+        // This should not happen if insert was successful
+        return NextResponse.json({ message: 'Failed to retrieve created class schedule.' }, { status: 500 });
+    }
 
+    const createdClass = createdClassRows[0];
+    const responseSchedule: ClassSchedule = {
+        id: createdClass.id,
+        class_name: createdClass.class_name,
+        description: createdClass.description,
+        instructor_user_id: createdClass.instructor_user_id,
+        instructor_name: createdClass.instructor_name,
+        start_time: formatTimestamp(createdClass.start_time),
+        end_time: formatTimestamp(createdClass.end_time),
+        location: createdClass.location,
+        max_capacity: Number(createdClass.max_capacity),
+        current_capacity: Number(createdClass.current_capacity),
+        difficulty_level: createdClass.difficulty_level,
+        equipment_needed: createdClass.equipment_needed,
+        created_at: formatTimestamp(createdClass.created_at),
+        updated_at: formatTimestamp(createdClass.updated_at),
+    };
 
-    return NextResponse.json(createdClassRows[0] as ClassSchedule, { status: 201 });
+    return NextResponse.json(responseSchedule, { status: 201 });
 
   } catch (error) {
-    if (connection) await connection.rollback(); // Rollback on any error during transaction
+    if (connection) await connection.rollback();
     console.error('Error creating class schedule:', error);
     if (error instanceof SyntaxError) { // JSON parsing error
         return NextResponse.json({ message: 'Invalid JSON format in request body.' }, { status: 400 });
